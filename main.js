@@ -43,7 +43,7 @@ var fetchCourse = function (filename, callback) {
 	var tempFolder = '.' + Math.random().toString(36).substring(7);
 	fs.ensureDirSync(path.join(__dirname, tempFolder));
 	exec(
-		'java -jar ' + path.join(argv.fitsdk, '/java/FitCSVTool.jar') + ' -i --data record -b "' + filename + '" "' + path.join(__dirname, tempFolder, 'temp.csv') + '"', 
+		'java -jar ' + path.join(argv.fitsdk, 'java', 'FitCSVTool.jar') + ' -i --data record -b "' + filename + '" "' + path.join(__dirname, tempFolder, 'temp.csv') + '"', 
 		function (err, stdout, stderr) {
 			csv()
 				.from.path(path.join(__dirname, tempFolder, 'temp_data.csv'), {
