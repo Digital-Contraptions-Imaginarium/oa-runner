@@ -19,7 +19,7 @@ node drop-terminated-postcodes.js --in data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_20
 The example below creates a JSON text file called *nearby-postcodes-course.json* including an array of all postcodes whose centroid is within 0.1 miles from the running course in the specified *.fit* file. Note how the reduced version of the ONSPD dataset produced following the setup instructions above is given as an input.
 
 ```
-node main.js --fit data/fit-samples/2014-12-24-11-11-15-Navigate.fit --onspd data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv > nearby-postcodes-course.json
+node main.js --fit data/fit-samples/2014-12-24-11-11-15-Navigate.fit --fitsdk etc/FitSDKRelease13.10/ --onspd data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv > nearby-postcodes-course.json
 ```
 
 The distance from the course can be changed by specifying the *--distance* parameter.

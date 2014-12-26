@@ -3,7 +3,7 @@ var async = require('async'),
 	fs = require('fs-extra')
 	path = require('path'),
 	argv = require('yargs')
-		.demand([ 'onspd', 'fit', 'distance' ])
+		.demand([ 'onspd', 'fit', 'fitsdk', 'distance' ])
 		.default('distance', .1) // miles
 		.alias('f', 'fit')
 		.alias('o', 'onspd')
@@ -44,7 +44,7 @@ var fetchCourse = function (filename, callback) {
 		tempFolder = '.' + Math.random().toString(36).substring(7);
 	fs.ensureDirSync(path.join(__dirname, tempFolder));
 	exec(
-		'java -jar etc/FitSDKRelease13.10/java/FitCSVTool.jar -i --data record -b "' + filename + '" "' + path.join(__dirname, tempFolder, 'temp.csv') + '"', 
+		'java -jar ' + path.join(argv.fitsdk, '/java/FitCSVTool.jar') + ' -i --data record -b "' + filename + '" "' + path.join(__dirname, tempFolder, 'temp.csv') + '"', 
 		function (err, stdout, stderr) {
 			csv()
 				.from.path(path.join(__dirname, tempFolder, 'temp_data.csv'), {
