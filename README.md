@@ -7,7 +7,7 @@ Infer addresses nearby runners' favourite courses, so that they just need to sto
 - Get a Java runtime environment available so that it can run from the command line using simpliy the *java* command. This is required to run the *FitCSVTool* tool, part of the FIT SDK. I've done my testing using Apple MacOS' Java SE runtime environment version 1.7.0_21.
 - Download the FIT SDK from [http://www.thisisant.com/resources/fit](http://www.thisisant.com/resources/fit) and uncompress it in *etc* (e.g. *etc/FitSDKRelease13.10*).
 - Download the CSV edition of Office for National Statistics' "Postcode Directory" Open Data dataset from [https://geoportal.statistics.gov.uk/geoportal/catalog/content/filelist.page?redirect=Docs/PostCodes/](https://geoportal.statistics.gov.uk/geoportal/catalog/content/filelist.page?redirect=Docs/PostCodes/) and uncompress it in *data* (e.g. *data/ONSPD_NOV_2014_csv*).
-- Use the *drop-terminated-postcodes.js* script to drop from the above datasets all terminated postcodes and create a new file with the remaining ones, e.g.
+- Use the *drop-terminated-postcodes.js* script to drop from the above dataset all terminated postcodes and create a new file with the remaining ones, e.g.
 
 	```
 	node drop-terminated-postcodes.js --in data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK.csv --out data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv 
