@@ -68,15 +68,9 @@ var fetchCourse = function (filename, callback) {
 
 // home is LatLon(51.759467, -0.577358);
 // Berkhamsted station is LatLon(51.764541, -0.562041);
-/*
-fetchNearbyPostcodes([ 
-			new LatLon(51.759467, -0.577358), 
-			// new LatLon(51.764541, -0.562041) 
-		], .1, function (err, postcodes) {
-	console.log(JSON.stringify(postcodes));
-});
-*/
 
-fetchCourse('data/fit-samples/2014-12-24-11-11-15-Navigate.fit', function (err, data) {
-	console.log(data);
+fetchCourse('data/fit-samples/2014-12-24-11-11-15-Navigate.fit', function (err, points) {
+	fetchNearbyPostcodes(points, .1, function (err, postcodes) {
+		console.log(JSON.stringify(postcodes));
+	});
 });
