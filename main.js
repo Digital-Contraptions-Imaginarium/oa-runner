@@ -3,8 +3,8 @@ var async = require('async'),
 	fs = require('fs-extra')
 	path = require('path');
 
-eval(fs.readFileSync('latlon.js') + '');
-eval(fs.readFileSync('gridref.js') + '');
+eval(fs.readFileSync(path.join(__dirname, 'lib', 'latlon.js') + '');
+eval(fs.readFileSync(path.join(__dirname, 'lib', 'gridref.js') + '');
 
 var fetchNearbyPostcodes = function (referenceLatLons, maxDistanceMiles, callback) {
 	referenceLatLons = [ ].concat(referenceLatLons); 
