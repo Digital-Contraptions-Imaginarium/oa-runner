@@ -1,0 +1,25 @@
+{
+  "name": "oa-runner",
+  "version": "0.0.1",
+  "description": "Infer addresses nearby runners' favourite courses, so that they just need to stop by and check next time",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://giacecco@github.com/Digital-Contraptions-Imaginarium/oa-runner.git"
+  },
+  "author": "Gianfranco Cecconi <gc1a13@soton.ac.uk>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Digital-Contraptions-Imaginarium/oa-runner/issues"
+  },
+  "homepage": "https://github.com/Digital-Contraptions-Imaginarium/oa-runner",
+  "dependencies": {
+    "async": "^0.9.0",
+    "csv-parse": "0.0.6",
+    "stream-transform": "0.0.6",
+    "underscore": "^1.7.0"
+  }
+}
