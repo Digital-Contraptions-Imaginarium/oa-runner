@@ -1,5 +1,7 @@
 var async = require('async'),
 	_ = require('underscore'),
+	csv = require('csv'),
+	exec = require('child_process').exec,
 	fs = require('fs-extra')
 	path = require('path'),
 	argv = require('yargs')
@@ -15,7 +17,6 @@ eval(fs.readFileSync(path.join(__dirname, 'lib', 'gridref.js')) + '');
 var fetchNearbyPostcodes = function (referenceLatLons, maxDistanceMiles, callback) {
 	referenceLatLons = [ ].concat(referenceLatLons); 
 	maxDistanceKm = parseFloat(maxDistanceMiles) * 1.609344;
-	var csv = require('csv');
 	csv()
 		.from.path(argv.onspd, {
 			'columns': true,
@@ -39,9 +40,7 @@ var fetchNearbyPostcodes = function (referenceLatLons, maxDistanceMiles, callbac
 }
 
 var fetchCourse = function (filename, callback) {
-	var csv = require('csv'),
-		exec = require('child_process').exec,
-		tempFolder = '.' + Math.random().toString(36).substring(7);
+	var tempFolder = '.' + Math.random().toString(36).substring(7);
 	fs.ensureDirSync(path.join(__dirname, tempFolder));
 	exec(
 		'java -jar ' + path.join(argv.fitsdk, '/java/FitCSVTool.jar') + ' -i --data record -b "' + filename + '" "' + path.join(__dirname, tempFolder, 'temp.csv') + '"', 

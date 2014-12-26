@@ -4,3 +4,5 @@ etc
 *.json
 .Rproj.user
 *.Rproj
+.RData
+.Rhistory
