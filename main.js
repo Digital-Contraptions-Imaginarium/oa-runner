@@ -51,16 +51,15 @@ var fetchCourse = function (filename, callback) {
 				.to.array(function (data) {
 					fs.removeSync(path.join(__dirname, tempFolder));
 					// remove duplicates (very difficult to find any, with 6 decimal digits)
-					data = _.uniq(data, false, function (x) { return x.lat.toString() + '_' + x.lon.toString(); });
+					data = _.uniq(data, false, function (x) { return x.lat() + '_' + x.lon(); });
 					callback(null, data);	
 				})
 				.transform(function (row) {
 					// TODO: why does .toFixed return a string?
-					row = {
-						'lat': parseFloat((parseFloat(row["record.position_lat[semicircles]"]) / 11930464.71).toFixed(6)),
-						'lon': parseFloat((parseFloat(row["record.position_long[semicircles]"]) / 11930464.71).toFixed(6))
-					};
-					return row;
+					return new LatLon(
+						parseFloat((parseFloat(row["record.position_lat[semicircles]"]) / 11930464.71).toFixed(6)),
+						parseFloat((parseFloat(row["record.position_long[semicircles]"]) / 11930464.71).toFixed(6))
+					);
 				});
 		}
 	);
