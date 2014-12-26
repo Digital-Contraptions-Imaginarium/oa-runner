@@ -14,9 +14,9 @@ var async = require('async'),
 eval(fs.readFileSync(path.join(__dirname, 'lib', 'latlon.js')) + '');
 eval(fs.readFileSync(path.join(__dirname, 'lib', 'gridref.js')) + '');
 
-var fetchNearbyPostcodes = function (referenceLatLons, maxDistanceMiles, callback) {
+var fetchNearbyPostcodes = function (referenceLatLons, callback) {
 	referenceLatLons = [ ].concat(referenceLatLons); 
-	maxDistanceKm = parseFloat(maxDistanceMiles) * 1.609344;
+	var maxDistanceKm = parseFloat(argv.distance) * 1.609344;
 	csv()
 		.from.path(argv.onspd, {
 			'columns': true,
@@ -72,7 +72,7 @@ var fetchCourse = function (filename, callback) {
 // Berkhamsted station is LatLon(51.764541, -0.562041);
 
 fetchCourse(argv.fit, function (err, points) {
-	fetchNearbyPostcodes(points, parseFloat(argv.distance), function (err, postcodes) {
+	fetchNearbyPostcodes(points, function (err, postcodes) {
 		console.log(JSON.stringify(postcodes));
 	});
 });
