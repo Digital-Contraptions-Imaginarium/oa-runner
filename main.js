@@ -1,7 +1,13 @@
 var async = require('async'),
 	_ = require('underscore'),
 	fs = require('fs-extra')
-	path = require('path');
+	path = require('path'),
+	argv = require('yargs')
+		.demand([ 'onspd', 'fit', 'distance' ])
+		.default('distance', .1) // miles
+		.alias('f', 'fit')
+		.alias('o', 'onspd')
+		.argv;
 
 eval(fs.readFileSync(path.join(__dirname, 'lib', 'latlon.js')) + '');
 eval(fs.readFileSync(path.join(__dirname, 'lib', 'gridref.js')) + '');
@@ -11,7 +17,7 @@ var fetchNearbyPostcodes = function (referenceLatLons, maxDistanceMiles, callbac
 	maxDistanceKm = parseFloat(maxDistanceMiles) * 1.609344;
 	var csv = require('csv');
 	csv()
-		.from.path('data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK.csv', {
+		.from.path(argv.onspd, {
 			'columns': true,
 			'delimiter': ',',
 		})
@@ -19,20 +25,16 @@ var fetchNearbyPostcodes = function (referenceLatLons, maxDistanceMiles, callbac
 			callback(null, data);	
 		})
 		.transform(function (row) {
-			var newRow = undefined;
-			if (row.doterm === '') {
-				var latLon = OsGridRef.osGridToLatLong(new OsGridRef(row.oseast1m, row.osnrth1m));
-				newRow = _.some(referenceLatLons, function (referenceLatLon) {
-							return parseFloat(latLon.distanceTo(referenceLatLon)) <= maxDistanceKm;
-						}) ? 
-							{ 
-								'pcd': row.pcd, 
-								'lat': parseFloat(latLon.lat().toFixed(6)), 
-								'lon': parseFloat(latLon.lon().toFixed(6)) 
-							} : 
-							undefined;				
-			}
-			return newRow;
+			var latLon = OsGridRef.osGridToLatLong(new OsGridRef(row.oseast1m, row.osnrth1m));
+			return _.some(referenceLatLons, function (referenceLatLon) {
+					return parseFloat(latLon.distanceTo(referenceLatLon)) <= maxDistanceKm;
+				}) ? 
+					{ 
+						'pcd': row.pcd, 
+						'lat': parseFloat(latLon.lat().toFixed(6)), 
+						'lon': parseFloat(latLon.lon().toFixed(6)) 
+					} : 
+					undefined;				
 		});
 }
 
@@ -70,8 +72,8 @@ var fetchCourse = function (filename, callback) {
 // home is LatLon(51.759467, -0.577358);
 // Berkhamsted station is LatLon(51.764541, -0.562041);
 
-fetchCourse('data/fit-samples/2014-12-24-11-11-15-Navigate.fit', function (err, points) {
-	fetchNearbyPostcodes(points, .1, function (err, postcodes) {
+fetchCourse(argv.fit, function (err, points) {
+	fetchNearbyPostcodes(points, parseFloat(argv.distance), function (err, postcodes) {
 		console.log(JSON.stringify(postcodes));
 	});
 });
