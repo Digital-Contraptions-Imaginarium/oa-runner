@@ -3,8 +3,8 @@ var async = require('async'),
 	fs = require('fs-extra')
 	path = require('path');
 
-eval(fs.readFileSync(path.join(__dirname, 'lib', 'latlon.js') + '');
-eval(fs.readFileSync(path.join(__dirname, 'lib', 'gridref.js') + '');
+eval(fs.readFileSync(path.join(__dirname, 'lib', 'latlon.js')) + '');
+eval(fs.readFileSync(path.join(__dirname, 'lib', 'gridref.js')) + '');
 
 var fetchNearbyPostcodes = function (referenceLatLons, maxDistanceMiles, callback) {
 	referenceLatLons = [ ].concat(referenceLatLons); 
@@ -19,19 +19,20 @@ var fetchNearbyPostcodes = function (referenceLatLons, maxDistanceMiles, callbac
 			callback(null, data);	
 		})
 		.transform(function (row) {
-			var latLon = OsGridRef.osGridToLatLong(new OsGridRef(row.oseast1m, row.osnrth1m));
-			if (_.some(referenceLatLons, function (referenceLatLon) {
-				return parseFloat(latLon.distanceTo(referenceLatLon)) <= maxDistanceKm;
-			})) {
-				row = {
-					'pcds': row.pcds,
-					'lat': latLon.lat(),
-					'lon': latLon.lon()
-				};
-			} else {
-				row = undefined;
+			var newRow = undefined;
+			if (row.doterm === '') {
+				var latLon = OsGridRef.osGridToLatLong(new OsGridRef(row.oseast1m, row.osnrth1m));
+				newRow = _.some(referenceLatLons, function (referenceLatLon) {
+							return parseFloat(latLon.distanceTo(referenceLatLon)) <= maxDistanceKm;
+						}) ? 
+							{ 
+								'pcd': row.pcd, 
+								'lat': parseFloat(latLon.lat().toFixed(6)), 
+								'lon': parseFloat(latLon.lon().toFixed(6)) 
+							} : 
+							undefined;				
 			}
-			return row;
+			return newRow;
 		});
 }
 
