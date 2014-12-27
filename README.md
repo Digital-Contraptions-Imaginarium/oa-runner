@@ -19,6 +19,11 @@ oa-runner support runners who want to contribute to [Open Addresses UK](http://o
 	```
 
 - Download the JSON, one-file-per-postcode-sector edition of Open Addresses UK's addresses-only dataset from [http://alpha.openaddressesuk.org/data](http://alpha.openaddressesuk.org/data) and uncompress it in *data* (e.g. *data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json*).
+- Install all Node.js dependencies:
+
+	```
+	npm install 
+	```
 
 ##Run
 The example below creates a JSON file called *investigationOptions.json* that includes an list of address investigation options that are most suitable to the course specified in the *.fit* file provided as an input. Note how the reduced version of the ONSPD dataset produced following the setup instructions above is given as an input. 
