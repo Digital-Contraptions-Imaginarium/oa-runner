@@ -19,13 +19,34 @@ Infer addresses nearby runners' favourite courses, so that they just need to sto
 - Download the JSON, one-file-per-postcode-sector edition of Open Addresses UK's addresses-only dataset from [http://alpha.openaddressesuk.org/data](http://alpha.openaddressesuk.org/data) and uncompress it in *data* (e.g. *data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json*).
 
 ##Run
-The example below creates a JSON text file called *nearby-postcodes-course.json* including an array of all postcodes whose centroid is within 0.1 miles from the running course in the specified *.fit* file. Note how the reduced version of the ONSPD dataset produced following the setup instructions above is given as an input.
+The example below creates a JSON text file called *investigationOptions-50yards-220yards.json* including an array of the most suitable address investigation options, given the *.fit* file you provide as an input with the target course for your run. Note how the reduced version of the ONSPD dataset produced following the setup instructions above is given as an input. 
 
 ```
-node main.js --fit data/fit-samples/2014-12-24-11-11-15-Navigate.fit --fitsdk etc/FitSDKRelease13.10/ --onspd data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv > nearby-postcodes-course.json
+node main.js --fit data/fit-samples/2014-12-24-11-11-15-Navigate.fit --fitsdk etc/FitSDKRelease13.10/ --oa data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv > investigationOptions.json 
 ```
 
-By default, not all points in the course are used, but one every ~22 yards. This can be changed using the *--sample* parameter. The distance from the course can be changed by specifying the *--distance* parameter.
+Each element in the array is made of:
 
-## Licence
+- *postcode*: describing the postcode to be investigated, its lat/lon and its distance along your run, e.g.
+
+	```
+	{
+		"pcd" : "HP4 2EB",
+		"lat" : 51.760489,
+		"lon" : -0.557384,
+		"courseDistance" : 1.6
+	}
+	```
+
+- *relevantOaAddresses*: an array of Open Addresses addresses belonging to that postcodes, in their native OA JSON format.
+
+The investigation options are ordered by proximity to the middle of your course. The underlying idea is that you are running to and back the address to be investigated :-) 
+
+The proposed postcodes are those whose centroid is within 50 yards (can be changed using the *--distance* command line parameter) from the running course in the specified *.fit* file. In theory, this means that investigating the addresses won't take the runner too far from her planned course. By default, not all points in the course are used, but one every ~220 yards (the *--sample* parameter). 
+
+##TODO
+- The investigation options should not simply list the addresses that are already known to OA, but list what we're asking the runner to check! E.g. the script could do basic inference on missing PAOs and ask the runner to check if they exist for real, or confirm that they don't.
+- All investigation options should be formatted in a format suitable for printing, so that the runner can take them with her. QR codes could be associated to each possible scenario being investigated, e.g. there could be one QR to say that 22 Bridge Street exists and another QR to say that it does not.
+
+##Licence
 Northing/Easting to Latitude/Longitude conversion in JavaScript code is done using Chris Veness' libraries available at [http://www.movable-type.co.uk/scripts/latlong-gridref.html](http://www.movable-type.co.uk/scripts/latlong-gridref.html) licensed under CC-BY 3.0, that implement the algorithms described by Ordnance Survey in the "A guide to coordinate systems in Great Britain" document at [www.ordnancesurvey.co.uk/docs/support/guide-coordinate-systems-great-britain.pdf](www.ordnancesurvey.co.uk/docs/support/guide-coordinate-systems-great-britain.pdf).
