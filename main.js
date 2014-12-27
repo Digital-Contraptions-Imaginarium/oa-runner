@@ -64,21 +64,23 @@ var fetchCourse = function (filename, callback) {
 				.to.array(function (data) {
 					fs.removeSync(path.join(__dirname, tempFolder));
 					// remove duplicates (very difficult to find any anyway, 
-					// with 6 decimal digits)
-					data = _.uniq(data, false, function (x) { return x.lat() + '_' + x.lon(); });
+					// with sampling and 6 decimal digits precision!)
+					data = _.uniq(data, false, function (x) { return x.position.lat() + '_' + x.position.lon(); });
 					callback(null, data);	
 				})
 				.transform(function (row) {
 					var newRow = undefined;
 					if (!latestDistance || (row["record.distance[m]"] - latestDistance >= SAMPLING_DISTANCE)) {
 						latestDistance = row["record.distance[m]"];
-					    newRow = new LatLon(
-							// read more about converting semicircles to lat/lon at
-							// http://www.gps-forums.net/explanation-sought-concerning-gps-semicircles-t1072.html
-							// TODO: why does .toFixed return a string?
-							parseFloat((parseFloat(row["record.position_lat[semicircles]"]) / 11930464.71).toFixed(6)),
-							parseFloat((parseFloat(row["record.position_long[semicircles]"]) / 11930464.71).toFixed(6))
-						);
+					    newRow = {
+					    	'distance': parseFloat((row["record.distance[m]"] * 0.000621371192).toFixed(1)), // miles
+					    	'position': new LatLon(
+								// read more about converting semicircles to 
+								// lat/lon at http://www.gps-forums.net/explanation-sought-concerning-gps-semicircles-t1072.html
+								parseFloat((parseFloat(row["record.position_lat[semicircles]"]) / 11930464.71).toFixed(6)),
+								parseFloat((parseFloat(row["record.position_long[semicircles]"]) / 11930464.71).toFixed(6))
+							),
+						};
 					}
 					return newRow;
 				});
