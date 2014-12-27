@@ -28,18 +28,17 @@ module.exports = function (onspdNonTerminatedCsvFile) {
 			})
 			.transform(function (row) {
 				var latLon = OsGridRef.osGridToLatLong(new OsGridRef(row.oseast1m, row.osnrth1m)),
-					// closestCoursePoint is not necessarily the course point that
-					// is closer to the postcode being examined, but the first in
-					// the course that is close enough
-					closestPoint = _.find(points, function (point) {
+					closestPoints = _.filter(points, function (point) {
 						return parseFloat(latLon.distanceTo(latLonFunction(point))) <= maxDistanceKm;
+					}).sort(function (a, b) {
+						return parseFloat(latLon.distanceTo(latLonFunction(a))) - parseFloat(latLon.distanceTo(latLonFunction(b)));
 					}); 
-				return closestPoint ? 
+				return closestPoints.length > 0 ? 
 					{ 
 						'pcd': row.pcd, 
 						'lat': parseFloat(latLon.lat().toFixed(6)), 
 						'lon': parseFloat(latLon.lon().toFixed(6)),
-						'closestPoint': closestPoint  
+						'closestPoint': closestPoints[0]  
 					} : 
 					undefined;				
 			});
