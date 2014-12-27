@@ -1,7 +1,7 @@
 oa-runner
 =========
 
-oa-runner support runners who want to contribute to [Open Addresses UK](http://openaddressesuk.org) by calculating opportunities for investigating addresses that are nearby their planned running courses.
+oa-runner is a collection of scripts to support runners who want to contribute to [Open Addresses UK](http://openaddressesuk.org) by calculating opportunities for investigating addresses that are nearby their planned running courses.
 
 **NOTE: this is a working prototype only**, but you are very welcome to feedback and contribute. Please use this repository's [issues section](https://github.com/Digital-Contraptions-Imaginarium/oa-runner/issues).
 
