@@ -6,12 +6,15 @@ var async = require('async'),
 	path = require('path'),
 	argv = require('yargs')
 		.demand([ 'onspd', 'fit', 'fitsdk', 'distance', 'sample' ])
-		.default('distance', .1) // miles
-		// the default course sample is 110 yards, or half a 'furlong': 5 times 
-		// the distance between the two wickets on a cricket pitch; on a ~3 
-		// miles run this filters the course from a few thousands down to 
-		// about 50 points
-		.default('sample', 110.) // yards 
+		// The default max distance between the course and the surrounding
+		// postcode centroids is 110 yards (~100 meters), or half a 'furlong': 
+		// 5 times the distance between the two wickets on a cricket pitch. 
+		// The smaller this value the less we are diverting the runner from her 
+		// course to check an address.
+		.default('distance', 110.) // yards
+		// The default course sample is 220 yards. On a ~3 miles run this 
+		// filters the course from a few thousands down to about 25 points.  
+		.default('sample', 220.) // yards 
 		.alias('f', 'fit')
 		.alias('o', 'onspd')
 		.argv;
@@ -21,7 +24,7 @@ eval(fs.readFileSync(path.join(__dirname, 'lib', 'gridref.js')) + '');
 
 var fetchNearbyPostcodes = function (referenceLatLons, callback) {
 	referenceLatLons = [ ].concat(referenceLatLons); 
-	var maxDistanceKm = parseFloat(argv.distance) * 1.609344;
+	var maxDistanceKm = parseFloat(argv.distance) * 0.0009144; // kilometers
 	csv()
 		.from.path(argv.onspd, {
 			'columns': true,
