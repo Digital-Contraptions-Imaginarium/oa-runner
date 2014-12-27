@@ -1,7 +1,7 @@
 oa-runner
 =========
 
-Infer addresses nearby runners' favourite courses, so that they just need to stop by and check next time
+oa-runner support runners who want to contribute to [Open Addresses UK](http://openaddressesuk.org) by calculating opportunities for investigating addresses that are nearby their planned courses.
 
 ##Compatibility
 - These scripts have been tested against the *.fit* files created by a [Garmin Fēnix 2 multisport watch](https://buy.garmin.com/en-GB/GB/watches-wearable-technology/wearables/fenix-2/prod159116.html). I presume that their format and conventions (e.g. the column names in the *.csv* files that can be extracted from the *.fit*) will be consistent at least across other Garmin models, but I did not test that.
@@ -19,7 +19,7 @@ Infer addresses nearby runners' favourite courses, so that they just need to sto
 - Download the JSON, one-file-per-postcode-sector edition of Open Addresses UK's addresses-only dataset from [http://alpha.openaddressesuk.org/data](http://alpha.openaddressesuk.org/data) and uncompress it in *data* (e.g. *data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json*).
 
 ##Run
-The example below creates a JSON text file called *investigationOptions-50yards-220yards.json* including an array of the most suitable address investigation options, given the *.fit* file you provide as an input with the target course for your run. Note how the reduced version of the ONSPD dataset produced following the setup instructions above is given as an input. 
+The example below creates a JSON text file called *investigationOptions.json* including an array of the most suitable address investigation options, given the *.fit* file you provide as an input with the target course for your run. Note how the reduced version of the ONSPD dataset produced following the setup instructions above is given as an input. 
 
 ```
 node main.js --fit data/fit-samples/2014-12-24-11-11-15-Navigate.fit --fitsdk etc/FitSDKRelease13.10/ --oa data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv > investigationOptions.json 
@@ -49,4 +49,6 @@ The proposed postcodes are those whose centroid is within 50 yards (can be chang
 - All investigation options should be formatted in a format suitable for printing, so that the runner can take them with her. QR codes could be associated to each possible scenario being investigated, e.g. there could be one QR to say that 22 Bridge Street exists and another QR to say that it does not.
 
 ##Licence
-Northing/Easting to Latitude/Longitude conversion in JavaScript code is done using Chris Veness' libraries available at [http://www.movable-type.co.uk/scripts/latlong-gridref.html](http://www.movable-type.co.uk/scripts/latlong-gridref.html) licensed under CC-BY 3.0, that implement the algorithms described by Ordnance Survey in the "A guide to coordinate systems in Great Britain" document at [www.ordnancesurvey.co.uk/docs/support/guide-coordinate-systems-great-britain.pdf](www.ordnancesurvey.co.uk/docs/support/guide-coordinate-systems-great-britain.pdf).
+Northing/Easting to Latitude/Longitude conversion in JavaScript code is done using Chris Veness' libraries, available at [http://www.movable-type.co.uk/scripts/latlong-gridref.html](http://www.movable-type.co.uk/scripts/latlong-gridref.html) and included in this repository for convenience. The libraries are licensed under CC-BY 3.0 and implement the algorithms described by Ordnance Survey in the "A guide to coordinate systems in Great Britain" document at [www.ordnancesurvey.co.uk/docs/support/guide-coordinate-systems-great-britain.pdf](www.ordnancesurvey.co.uk/docs/support/guide-coordinate-systems-great-britain.pdf).
+
+All other code is copyright (c) 2014 Digital Contraptions Imaginarium Ltd. and licensed under the terms of the [MIT licence](LICENCE.md).
