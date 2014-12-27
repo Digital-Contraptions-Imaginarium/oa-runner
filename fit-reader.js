@@ -11,9 +11,12 @@ module.exports = function (fitSdkLocation) {
 	eval(fs.readFileSync(path.join(__dirname, 'lib', 'gridref.js')) + '');
 
 	// Returns the list of points the course in the 'filename' .fit file is made
-	// of. If 'samplingDistance' is specified, only one point every at least
-	// 'samplingDistance' meters is returned. 'samplingDistance' is 
-	// specified in meters.
+	// of.
+	// Each point is made of 'distance' (in the course, in meters) and 
+	// 'position', that is a LatLon as in Chris Veness' libraries.
+	// If 'samplingDistance' is specified, only one point every at least
+	// 'samplingDistance' meters in the course is returned. 'samplingDistance' 
+	// is specified in meters.
 	var fetchCourse = function (filename, samplingDistance, callback) {
 		if (!callback) {
 			callback = samplingDistance;
