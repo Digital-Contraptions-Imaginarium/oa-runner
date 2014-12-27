@@ -22,7 +22,7 @@ The example below creates a JSON text file called *nearby-postcodes-course.json*
 node main.js --fit data/fit-samples/2014-12-24-11-11-15-Navigate.fit --fitsdk etc/FitSDKRelease13.10/ --onspd data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv > nearby-postcodes-course.json
 ```
 
-The distance from the course can be changed by specifying the *--distance* parameter.
+By default, not all points in the course are used, but one every ~22 yards. This can be changed using the *--sample* parameter. The distance from the course can be changed by specifying the *--distance* parameter.
 
 ## Licence
 Northing/Easting to Latitude/Longitude conversion in JavaScript code is done using Chris Veness' libraries available at [http://www.movable-type.co.uk/scripts/latlong-gridref.html](http://www.movable-type.co.uk/scripts/latlong-gridref.html) licensed under CC-BY 3.0, that implement the algorithms described by Ordnance Survey in the "A guide to coordinate systems in Great Britain" document at [www.ordnancesurvey.co.uk/docs/support/guide-coordinate-systems-great-britain.pdf](www.ordnancesurvey.co.uk/docs/support/guide-coordinate-systems-great-britain.pdf).
