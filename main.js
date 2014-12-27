@@ -97,47 +97,48 @@ var fetchCourse = function (filename, callback) {
 }
 
 
-// home is LatLon(51.759467, -0.577358);
-// Berkhamsted station is LatLon(51.764541, -0.562041);
-
-/*
-fetchCourse(argv.fit, function (err, points) {
-	fetchNearbyPostcodes(points, function (err, postcodes) {
-		console.log(JSON.stringify(postcodes));
-	});
-});
-*/
-
 // This test script identifies the addresses known to Open Addresses that are 
 // closer to the middle of the course 
-var oaAvailablePostcodeSectors = fs.readdirSync(argv.oa)
-		.filter(function (p) { return fs.statSync(path.join(argv.oa, p)).isFile() && (path.extname(path.join(argv.oa, p)) === '.json'); })
-		.map(function (p) { return path.basename(path.join(argv.oa, p), '.json'); }),
-	coursePostcodes = fs.readJsonSync('nearby-postcodes-course-50yards-220yards.json'),
-	// the ideal postcode to be investigated is in the middle of the course; in
-	// a way the entire course can be seen as a run to the postcode to be
-	// investigated and back
-	idealCoursePostcodeDistance = Math.max.apply(null, coursePostcodes.map(function (p) { return p.courseDistance; })) / 2.;
-var candidateInvestigations = coursePostcodes.reduce(function (memo, coursePostcode) {
-	// I fetch all addresses OA knows in that postcode
-	var relevantOaSector = _.find(oaAvailablePostcodeSectors, function (sector) {
-				return _.first(coursePostcodes).pcd.match(new RegExp('^' + sector));
-			}),
-		relevantOaAddresses = !relevantOaSector ? 
-			[ ] :
-			fs.readJsonSync(path.join(argv.oa, relevantOaSector + '.json'))
-				.filter(function (address) {
-					return address.address.postcode.name === coursePostcode.pcd;
-				});
-	return (relevantOaAddresses.length === 0) ?
-		memo :
-		memo.concat({
-			'postcode': coursePostcode,
-			'relevantOaAddresses': relevantOaAddresses,
+var generateInvestigationOptions = function (coursePostcodes, callback) {
+	var oaAvailablePostcodeSectors = fs.readdirSync(argv.oa)
+			.filter(function (p) { return fs.statSync(path.join(argv.oa, p)).isFile() && (path.extname(path.join(argv.oa, p)) === '.json'); })
+			.map(function (p) { return path.basename(path.join(argv.oa, p), '.json'); }),
+		// the ideal postcode to be investigated is in the middle of the course; in
+		// a way the entire course can be seen as a run to the postcode to be
+		// investigated and back
+		idealCoursePostcodeDistance = Math.max.apply(null, coursePostcodes.map(function (p) { return p.courseDistance; })) / 2.;
+	var candidateInvestigations = coursePostcodes.reduce(function (memo, coursePostcode) {
+		// I fetch all addresses OA knows in that postcode
+		var relevantOaSector = _.find(oaAvailablePostcodeSectors, function (sector) {
+					return _.first(coursePostcodes).pcd.match(new RegExp('^' + sector));
+				}),
+			relevantOaAddresses = !relevantOaSector ? 
+				[ ] :
+				fs.readJsonSync(path.join(argv.oa, relevantOaSector + '.json'))
+					.filter(function (address) {
+						return address.address.postcode.name === coursePostcode.pcd;
+					});
+		return (relevantOaAddresses.length === 0) ?
+			memo :
+			memo.concat({
+				'postcode': coursePostcode,
+				'relevantOaAddresses': relevantOaAddresses,
+			});
+	}, [ ]).sort(function (a, b) { 
+		// I sort candidate investigations by how close they are to that ideal 
+		// distance
+		return Math.abs(a.postcode.courseDistance - idealCoursePostcodeDistance) - Math.abs(b.postcode.courseDistance - idealCoursePostcodeDistance);
+	});
+	callback(null, candidateInvestigations);
+};
+
+
+// home is LatLon(51.759467, -0.577358);
+// Berkhamsted station is LatLon(51.764541, -0.562041);
+fetchCourse(argv.fit, function (err, points) {
+	fetchNearbyPostcodes(points, function (err, coursePostcodes) {
+		generateInvestigationOptions(coursePostcodes, function (err, investigationOptions) {
+			console.log(JSON.stringify(investigationOptions));
 		});
-}, [ ]).sort(function (a, b) { 
-	// I sort candidate investigations by how close they are to that ideal 
-	// distance
-	return Math.abs(a.postcode.courseDistance - idealCoursePostcodeDistance) - Math.abs(b.postcode.courseDistance - idealCoursePostcodeDistance);
+	});
 });
-console.log(JSON.stringify(candidateInvestigations));
