@@ -3,6 +3,9 @@ oa-runner
 
 Infer addresses nearby runners' favourite courses, so that they just need to stop by and check next time
 
+##Compatibility
+- These scripts have been tested against the *.fit* files created by a [Garmin Fēnix 2 multisport watch](https://buy.garmin.com/en-GB/GB/watches-wearable-technology/wearables/fenix-2/prod159116.html). I presume that their format and conventions (e.g. the column names in the *.csv* files that can be extracted from the *.fit*) will be consistent at least across other Garmin models, but I did not test that.
+
 ##Setup
 - Setup any recent Java runtime environment suitable to your system, so that it can run from the command line using the *java* command. This is required to run the *FitCSVTool* tool, part of the FIT SDK. I've done my testing using Apple MacOS' Java SE runtime environment version 1.7.0_21.
 - Download the FIT SDK from [http://www.thisisant.com/resources/fit](http://www.thisisant.com/resources/fit) and uncompress it in *etc* (e.g. *etc/FitSDKRelease13.10*).
