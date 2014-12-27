@@ -113,34 +113,31 @@ fetchCourse(argv.fit, function (err, points) {
 var oaAvailablePostcodeSectors = fs.readdirSync(argv.oa)
 		.filter(function (p) { return fs.statSync(path.join(argv.oa, p)).isFile() && (path.extname(path.join(argv.oa, p)) === '.json'); })
 		.map(function (p) { return path.basename(path.join(argv.oa, p), '.json'); }),
-	coursePostcodes = fs.readJsonSync('nearby-postcodes-course-50yards-220yards.json')
-		.filter(function (p) {
-			return _.some(oaAvailablePostcodeSectors, function (sector) { return p.pcd.match(new RegExp('^' + sector)); })
-		}),
-	relevantOaAddresses = [ ];
-if (coursePostcodes.length > 0) {
-	var // the ideal postcode to be investigated is in the middle of the course; in
-		// a way the entire course can be seen as a run to the postcode to be
-		// investigated and back
-		idealCoursePostcodeDistance = Math.max.apply(null, coursePostcodes.map(function (p) { return p.courseDistance; })) / 2.;
-	// I sort candidate postcodes by how close they are to that distance
-	coursePostcodes = coursePostcodes.sort(function (a, b) { 
-		return Math.abs(a.courseDistance - idealCoursePostcodeDistance) > Math.abs(b.courseDistance - idealCoursePostcodeDistance);
-	});
-	while ((relevantOaAddresses.length === 0) && (coursePostcodes.length > 0)) {
-		// I fetch all addresses OA knows in that postcode
-		var relevantOaSectionFile = path.join(argv.oa, _.find(oaAvailablePostcodeSectors, function (sector) {
-					return _.first(coursePostcodes).pcd.match(new RegExp('^' + sector));
-				}) + '.json');
-		relevantOaAddresses = fs.readJsonSync(relevantOaSectionFile)
-			.filter(function (address) {
-				return address.address.postcode.name === _.first(coursePostcodes).pcd;
-			});
-		coursePostcodes = _.rest(coursePostcodes);	
-	}
-}
-if (relevantOaAddresses.length === 0) {
-	console.log([ ]);	
-} else {
-	console.log(JSON.stringify(relevantOaAddresses));
-}
+	coursePostcodes = fs.readJsonSync('nearby-postcodes-course-50yards-220yards.json'),
+	// the ideal postcode to be investigated is in the middle of the course; in
+	// a way the entire course can be seen as a run to the postcode to be
+	// investigated and back
+	idealCoursePostcodeDistance = Math.max.apply(null, coursePostcodes.map(function (p) { return p.courseDistance; })) / 2.;
+var candidateInvestigations = coursePostcodes.reduce(function (memo, coursePostcode) {
+	// I fetch all addresses OA knows in that postcode
+	var relevantOaSector = _.find(oaAvailablePostcodeSectors, function (sector) {
+				return _.first(coursePostcodes).pcd.match(new RegExp('^' + sector));
+			}),
+		relevantOaAddresses = !relevantOaSector ? 
+			[ ] :
+			fs.readJsonSync(path.join(argv.oa, relevantOaSector + '.json'))
+				.filter(function (address) {
+					return address.address.postcode.name === coursePostcode.pcd;
+				});
+	return (relevantOaAddresses.length === 0) ?
+		memo :
+		memo.concat({
+			'postcode': coursePostcode,
+			'relevantOaAddresses': relevantOaAddresses,
+		});
+}, [ ]).sort(function (a, b) { 
+	// I sort candidate investigations by how close they are to that ideal 
+	// distance
+	return Math.abs(a.postcode.courseDistance - idealCoursePostcodeDistance) - Math.abs(b.postcode.courseDistance - idealCoursePostcodeDistance);
+});
+console.log(JSON.stringify(candidateInvestigations));
