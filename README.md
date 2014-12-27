@@ -41,7 +41,14 @@ Each element in the array is made of:
 		"pcd" : "HP4 2EB",
 		"lat" : 51.760489,
 		"lon" : -0.557384,
-		"courseDistance" : 1.6
+		"closestPoint" : {
+			"distance" : 1.6,
+			"position" : {
+				"_lat" : 51.760688,
+				"_lon" : -0.557431,
+				"_radius" : 6371
+			}
+		}
 	}
 	```
 

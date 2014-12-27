@@ -36,8 +36,7 @@ module.exports = function (onspdNonTerminatedCsvFile) {
 				return closestPoints.length > 0 ? 
 					{ 
 						'pcd': row.pcd, 
-						'lat': parseFloat(latLon.lat().toFixed(6)), 
-						'lon': parseFloat(latLon.lon().toFixed(6)),
+						'position': latLon,
 						'closestPoint': closestPoints[0]  
 					} : 
 					undefined;				
