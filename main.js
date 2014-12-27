@@ -1,3 +1,5 @@
+// TODO: why does .toFixed return a string?
+
 var async = require('async'),
 	_ = require('underscore'),
 	csv = require('csv'),
@@ -5,15 +7,17 @@ var async = require('async'),
 	fs = require('fs-extra')
 	path = require('path'),
 	argv = require('yargs')
-		.demand([ 'onspd', 'fit', 'fitsdk', 'distance', 'sample' ])
+		.demand([ 'oa', 'onspd', 'fit', 'fitsdk', 'distance', 'sample' ])
 		// The default max distance between the course and the surrounding
-		// postcode centroids is 110 yards (~100 meters), or half a 'furlong': 
-		// 5 times the distance between the two wickets on a cricket pitch. 
-		// The smaller this value the less we are diverting the runner from her 
-		// course to check an address.
-		.default('distance', 110.) // yards
+		// postcode centroids is 50 yards (~46 meters). The smaller this value, 
+		// the less we are diverting the runner from her course to check an 
+		// address.
+		.default('distance', 50.) // yards
 		// The default course sample is 220 yards. On a ~3 miles run this 
-		// filters the course from a few thousands down to about 25 points.  
+		// filters the course from a few thousands down to about 25 points. 
+		// The combination of 50 yards distance and 220 yards sample identifies
+		// 23 candidate postcodes on @giacecco's standard hometown run
+		// (e.g. http://dico.im/145XqiJ ). 
 		.default('sample', 220.) // yards 
 		.alias('f', 'fit')
 		.alias('o', 'onspd')
@@ -22,8 +26,7 @@ var async = require('async'),
 eval(fs.readFileSync(path.join(__dirname, 'lib', 'latlon.js')) + '');
 eval(fs.readFileSync(path.join(__dirname, 'lib', 'gridref.js')) + '');
 
-var fetchNearbyPostcodes = function (referenceLatLons, callback) {
-	referenceLatLons = [ ].concat(referenceLatLons); 
+var fetchNearbyPostcodes = function (coursePoints, callback) {
 	var maxDistanceKm = parseFloat(argv.distance) * 0.0009144; // kilometers
 	csv()
 		.from.path(argv.onspd, {
@@ -34,17 +37,21 @@ var fetchNearbyPostcodes = function (referenceLatLons, callback) {
 			callback(null, data);	
 		})
 		.transform(function (row) {
-			// console.log("Checking " + row.pcd + "...");
-			var latLon = OsGridRef.osGridToLatLong(new OsGridRef(row.oseast1m, row.osnrth1m));
-			return _.some(referenceLatLons, function (referenceLatLon) {
-					return parseFloat(latLon.distanceTo(referenceLatLon)) <= maxDistanceKm;
-				}) ? 
-					{ 
-						'pcd': row.pcd, 
-						'lat': parseFloat(latLon.lat().toFixed(6)), 
-						'lon': parseFloat(latLon.lon().toFixed(6)) 
-					} : 
-					undefined;				
+			var latLon = OsGridRef.osGridToLatLong(new OsGridRef(row.oseast1m, row.osnrth1m)),
+				// closestCoursePoint is not necessarily the course point that
+				// is closer to the postcode being examined, but the first in
+				// the course that is close enough
+				closestCoursePoint = _.find(coursePoints, function (coursePoint) {
+					return parseFloat(latLon.distanceTo(coursePoint.position)) <= maxDistanceKm;
+				}); 
+			return closestCoursePoint ? 
+				{ 
+					'pcd': row.pcd, 
+					'lat': parseFloat(latLon.lat().toFixed(6)), 
+					'lon': parseFloat(latLon.lon().toFixed(6)),
+					'courseDistance': closestCoursePoint.distance // the distance in the runner's course 
+				} : 
+				undefined;				
 		});
 }
 
@@ -92,9 +99,16 @@ var fetchCourse = function (filename, callback) {
 // home is LatLon(51.759467, -0.577358);
 // Berkhamsted station is LatLon(51.764541, -0.562041);
 
+/*
 fetchCourse(argv.fit, function (err, points) {
-	// console.log("The course is made of " + points.length + " points.")
 	fetchNearbyPostcodes(points, function (err, postcodes) {
 		console.log(JSON.stringify(postcodes));
 	});
 });
+*/
+
+var postcodeSectors = fs.readdirSync(argv.oa)
+	.filter(function (p) { return fs.statSync(path.join(argv.oa, p)).isFile() && (path.extname(path.join(argv.oa, p)) === '.json'); })
+	.map(function (p) { return path.basename(path.join(argv.oa, p), '.json').toUpperCase(); });
+console.log(postcodeSectors);
+
