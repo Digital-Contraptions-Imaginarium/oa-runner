@@ -45,6 +45,7 @@ The investigation options are ordered by proximity to the middle of your course.
 The proposed postcodes are those whose centroid is within 50 yards (can be changed using the *--distance* command line parameter) from the running course in the specified *.fit* file. In theory, this means that investigating the addresses won't take the runner too far from her planned course. By default, not all points in the course are used, but one every ~220 yards (the *--sample* parameter). 
 
 ##TODO
+- No need to own a fitness device and give a *.fit* file as an input! Just specify a target distance to be run *as the crow flies* and look for investigation opportunities there.
 - The investigation options should not simply list the addresses that are already known to OA, but list what we're asking the runner to check! E.g. the script could do basic inference on missing PAOs and ask the runner to check if they exist for real, or confirm that they don't.
 - All investigation options should be formatted in a format suitable for printing, so that the runner can take them with her. QR codes could be associated to each possible scenario being investigated, e.g. there could be one QR to say that 22 Bridge Street exists and another QR to say that it does not.
 
