@@ -22,7 +22,8 @@ var async = require('async'),
 		.default('sample', 220.) // yards 
 		.alias('f', 'fit')
 		.alias('o', 'onspd')
-		.argv;
+		.argv,
+	oaReader = new require('./oa-reader')(argv.oa);
 
 eval(fs.readFileSync(path.join(__dirname, 'lib', 'latlon.js')) + '');
 eval(fs.readFileSync(path.join(__dirname, 'lib', 'gridref.js')) + '');
@@ -97,39 +98,6 @@ var fetchCourse = function (filename, callback) {
 }
 
 
-// returns the list of postcode sectors found in the OA distro
-// TODO: is it worth memoizing this?
-var readOaPostcodeSectors = function (callback) {
-	fs.readdir(argv.oa, function (err, entries) {
-		async.filter(entries, function (entry, callback) {
-			fs.stat(path.join(argv.oa, entry), function (err, stats) {
-				// console.log(entry, stats.isFile());
-				callback(stats.isFile() && (path.extname(path.join(argv.oa, entry)) === '.json'));
-			});
-		}, function (results) {
-			callback(null, results.map(function (result) { return path.basename(path.join(argv.oa, result), '.json'); }));
-		});
-	});
-};
-
-// returns all addresses found in the OA distro for the specified postcode
-var readOaAddressesByPostcode = function (postcode, callback) {
-	readOaPostcodeSectors(function (err, oaAvailablePostcodeSectors) {
-		var relevantOaSector = _.find(oaAvailablePostcodeSectors, function (sector) {
-					return postcode.match(new RegExp('^' + sector));
-				});
-		if (!relevantOaSector) {
-			callback(null, [ ]);
-		} else {
-			fs.readJson(path.join(argv.oa, relevantOaSector + '.json'), function (err, addresses) {
-				callback(null, addresses.filter(function (address) {
-					return address.address.postcode.name === postcode;
-				}));
-			});
-		}
-	});
-};
-
 // This test script identifies the addresses known to Open Addresses that are 
 // closer to the middle of the course 
 var generateInvestigationOptions = function (coursePostcodes, callback) {
@@ -139,7 +107,7 @@ var generateInvestigationOptions = function (coursePostcodes, callback) {
 	var idealCoursePostcodeDistance = Math.max.apply(null, coursePostcodes.map(function (p) { return p.courseDistance; })) / 2.;
 	async.reduce(coursePostcodes, [ ], function (memo, coursePostcode, callback) {
 		// I fetch all addresses OA knows in that postcode
-		readOaAddressesByPostcode(coursePostcode.pcd, function (err, addresses) {
+		oaReader.readOaAddressesByPostcode(coursePostcode.pcd, function (err, addresses) {
 			if (addresses.length === 0) {
 				callback(null, memo);
 			} else {
