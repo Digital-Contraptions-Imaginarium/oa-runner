@@ -97,48 +97,80 @@ var fetchCourse = function (filename, callback) {
 }
 
 
+// returns the list of postcode sectors found in the OA distro
+// TODO: is it worth memoizing this?
+var readOaPostcodeSectors = function (callback) {
+	fs.readdir(argv.oa, function (err, entries) {
+		async.filter(entries, function (entry, callback) {
+			fs.stat(path.join(argv.oa, entry), function (err, stats) {
+				// console.log(entry, stats.isFile());
+				callback(stats.isFile() && (path.extname(path.join(argv.oa, entry)) === '.json'));
+			});
+		}, function (results) {
+			callback(null, results.map(function (result) { return path.basename(path.join(argv.oa, result), '.json'); }));
+		});
+	});
+};
+
+// returns all addresses found in the OA distro for the specified postcode
+var readOaAddressesByPostcode = function (postcode, callback) {
+	readOaPostcodeSectors(function (err, oaAvailablePostcodeSectors) {
+		var relevantOaSector = _.find(oaAvailablePostcodeSectors, function (sector) {
+					return postcode.match(new RegExp('^' + sector));
+				});
+		if (!relevantOaSector) {
+			callback(null, [ ]);
+		} else {
+			fs.readJson(path.join(argv.oa, relevantOaSector + '.json'), function (err, addresses) {
+				callback(null, addresses.filter(function (address) {
+					return address.address.postcode.name === postcode;
+				}));
+			});
+		}
+	});
+};
+
 // This test script identifies the addresses known to Open Addresses that are 
 // closer to the middle of the course 
 var generateInvestigationOptions = function (coursePostcodes, callback) {
-	var oaAvailablePostcodeSectors = fs.readdirSync(argv.oa)
-			.filter(function (p) { return fs.statSync(path.join(argv.oa, p)).isFile() && (path.extname(path.join(argv.oa, p)) === '.json'); })
-			.map(function (p) { return path.basename(path.join(argv.oa, p), '.json'); }),
-		// the ideal postcode to be investigated is in the middle of the course; in
-		// a way the entire course can be seen as a run to the postcode to be
-		// investigated and back
-		idealCoursePostcodeDistance = Math.max.apply(null, coursePostcodes.map(function (p) { return p.courseDistance; })) / 2.;
-	var candidateInvestigations = coursePostcodes.reduce(function (memo, coursePostcode) {
+	// the ideal postcode to be investigated is in the middle of the course; in
+	// a way the entire course can be seen as a run to the postcode to be
+	// investigated and back
+	var idealCoursePostcodeDistance = Math.max.apply(null, coursePostcodes.map(function (p) { return p.courseDistance; })) / 2.;
+	async.reduce(coursePostcodes, [ ], function (memo, coursePostcode, callback) {
 		// I fetch all addresses OA knows in that postcode
-		var relevantOaSector = _.find(oaAvailablePostcodeSectors, function (sector) {
-					return _.first(coursePostcodes).pcd.match(new RegExp('^' + sector));
-				}),
-			relevantOaAddresses = !relevantOaSector ? 
-				[ ] :
-				fs.readJsonSync(path.join(argv.oa, relevantOaSector + '.json'))
-					.filter(function (address) {
-						return address.address.postcode.name === coursePostcode.pcd;
-					});
-		return (relevantOaAddresses.length === 0) ?
-			memo :
-			memo.concat({
-				'postcode': coursePostcode,
-				'relevantOaAddresses': relevantOaAddresses,
-			});
-	}, [ ]).sort(function (a, b) { 
-		// I sort candidate investigations by how close they are to that ideal 
-		// distance
-		return Math.abs(a.postcode.courseDistance - idealCoursePostcodeDistance) - Math.abs(b.postcode.courseDistance - idealCoursePostcodeDistance);
+		readOaAddressesByPostcode(coursePostcode.pcd, function (err, addresses) {
+			if (addresses.length === 0) {
+				callback(null, memo);
+			} else {
+				callback(null, memo.concat({
+					'postcode': coursePostcode,
+					'relevantOaAddresses': addresses,
+				}));
+			}
+		});
+	}, function (err, candidateInvestigations) {
+		callback(err, candidateInvestigations.sort(function (a, b) { 
+			// I sort candidate investigations by how close they are to that ideal 
+			// distance
+			return Math.abs(a.postcode.courseDistance - idealCoursePostcodeDistance) - Math.abs(b.postcode.courseDistance - idealCoursePostcodeDistance);
+		}));
 	});
-	callback(null, candidateInvestigations);
 };
 
 
 // home is LatLon(51.759467, -0.577358);
 // Berkhamsted station is LatLon(51.764541, -0.562041);
+/*
 fetchCourse(argv.fit, function (err, points) {
 	fetchNearbyPostcodes(points, function (err, coursePostcodes) {
 		generateInvestigationOptions(coursePostcodes, function (err, investigationOptions) {
 			console.log(JSON.stringify(investigationOptions));
 		});
 	});
+});
+*/
+
+generateInvestigationOptions(fs.readJsonSync('nearby-postcodes-course-50yards-220yards.json'), function (err, investigationOptions) {
+	console.log(JSON.stringify(investigationOptions));
 });
