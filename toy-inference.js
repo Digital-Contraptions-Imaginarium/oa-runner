@@ -19,20 +19,16 @@ module.exports = function () {
 					return _.uniq(memo.concat([ a.address.pao, a.address.sao ]));
 				}, [ ]).filter(function (x) { return x; }),
 				numericPaosAndSaosWithoutLetters = paosAndSaos.reduce(function (memo, a) {
-					if (a.match(/(\d+).*/)) {
-						memo.push(parseInt(a.match(/(\d+).*/)[1]));
-					}
+					if (a.match(/(\d+).*/)) memo.push(parseInt(a.match(/(\d+).*/)[1]));
 					return memo;
 				}, [ ]);
 			if (numericPaosAndSaosWithoutLetters.length > 1) {
 				// can't do any inference of this kind if I don't have at least
 				// two numbers belonging to the same street
-				var max = Math.max.apply(null, numericPaosAndSaosWithoutLetters),
-					min = Math.min.apply(null, numericPaosAndSaosWithoutLetters),
-					// infer all house numbers without letters between the min 
+				var // infer all house numbers without letters between the min 
 					// and the max and removing the ones I know already
 					inferredPaos = _.difference(
-						_.range(min + 1, max).map(function (x) { return x.toString(); }), 
+						_.range(Math.min.apply(null, numericPaosAndSaosWithoutLetters) + 1, Math.max.apply(null, numericPaosAndSaosWithoutLetters)).map(function (x) { return x.toString(); }), 
 						paosAndSaos.filter(function (a) { return a.match(/\d+/); })
 					),
 					addressPrototype = JSON.parse(JSON.stringify(_.find(oaAddresses, function (a) { return a.address.street.url === streetUrl; })));
