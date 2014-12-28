@@ -23,7 +23,8 @@ var async = require('async'),
 		.argv,
 	fitReader = new require('./fit-reader')(argv.fitsdk),
 	onspdReader = new require('./onspd-reader')(argv.onspd),
-	oaReader = new require('./oa-reader')(argv.oa);
+	oaReader = new require('./oa-reader')(argv.oa),
+	inferenceEngine = new require('./toy-inference.js')();
 
 // This test script identifies the addresses known to Open Addresses that are 
 // closer to the middle of the course 
@@ -59,7 +60,14 @@ var generateInvestigationOptions = function (coursePostcodes, callback) {
 fitReader.fetchCourse(argv.fit, parseFloat(argv.sample) * 0.9144, function (err, points) {
 	onspdReader.fetchNearbyPostcodes(points, function (point) { return point.position; }, parseFloat(argv.distance) * 0.0009144, function (err, coursePostcodes) {
 		generateInvestigationOptions(coursePostcodes, function (err, investigationOptions) {
-			console.log(JSON.stringify(investigationOptions));
+			async.each(investigationOptions, function (o, callback) {
+				inferenceEngine.doTheInferenceMagic(o.relevantOaAddresses, function (err, inferredAddresses) {
+					o.inferredAddresses = inferredAddresses;
+					callback(null);
+				});
+			}, function (err) {
+				console.log(JSON.stringify(investigationOptions));
+			});
 		});
 	});
 });
