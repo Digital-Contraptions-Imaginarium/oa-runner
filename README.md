@@ -10,6 +10,12 @@ oa-runner is a collection of scripts to support runners who want to contribute t
 
 ##Setup
 - Setup any recent Java runtime environment suitable to your system, so that it can run from the command line using the *java* command. This is required to run the *FitCSVTool* tool, part of the FIT SDK. We did our testing using Apple MacOS' Java SE runtime environment version 1.7.0_21.
+- Install the [PhantomJS](http://phantomjs.org/) command line utility. On MacOS, using [Homebrew](http://brew.sh/), it's as simple as:
+
+	```
+	brew install phantomjs
+	```
+
 - Download the FIT SDK from [http://www.thisisant.com/resources/fit](http://www.thisisant.com/resources/fit) and uncompress it in *etc* (e.g. *etc/FitSDKRelease13.10*).
 - Download the latest CSV edition of Office for National Statistics' "Postcode Directory" Open Data dataset from [https://geoportal.statistics.gov.uk/geoportal/catalog/content/filelist.page?redirect=Docs/PostCodes/](https://geoportal.statistics.gov.uk/geoportal/catalog/content/filelist.page?redirect=Docs/PostCodes/) and uncompress it in *data* (e.g. *data/ONSPD_NOV_2014_csv*).
 - Use the *tools/drop-terminated-postcodes.js* script to drop from the above dataset all terminated postcodes and create a new file with the remaining ones, e.g.
@@ -34,7 +40,7 @@ node main.js --fit data/fit-samples/2014-12-24-11-11-15-Navigate.fit --fitsdk et
 
 Each element in the array is made of:
 
-- *postcode*: describing the postcode to be investigated, its lat/lon and its distance along your run, e.g.
+- *postcode*: describing the postcode to be investigated, its lat/lon and the course's closest point, e.g.
 
 	```
 	{
@@ -65,5 +71,9 @@ The proposed postcodes are those whose centroid is within 50 yards (can be chang
 
 ##Licence
 Northing/Easting to Latitude/Longitude conversion in JavaScript code is done using Chris Veness' libraries, available at [http://www.movable-type.co.uk/scripts/latlong-gridref.html](http://www.movable-type.co.uk/scripts/latlong-gridref.html) and included in this repository for convenience. The libraries are licensed under CC-BY 3.0 and implement the algorithms described by Ordnance Survey in the "A guide to coordinate systems in Great Britain" document at [www.ordnancesurvey.co.uk/docs/support/guide-coordinate-systems-great-britain.pdf](www.ordnancesurvey.co.uk/docs/support/guide-coordinate-systems-great-britain.pdf).
+
+QR codes are generated using Shim Sangmin's *qrcode.js* library, available at [https://github.com/davidshimjs/qrcodejs](https://github.com/davidshimjs/qrcodejs) and included in this repository for convenience. It is copyright (c) Shim Sangmin (davidshimjs) and licensed under the terms of the MIT licence.
+
+The project uses many other Open Source libraries that are referenced in the [*package.json*]([package.json]) file but not distributed within this repository.
 
 All other code is copyright (c) 2014 Digital Contraptions Imaginarium Ltd. and licensed under the terms of the [MIT licence](LICENCE.md).
