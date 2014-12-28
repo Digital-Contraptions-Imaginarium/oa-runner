@@ -20,7 +20,7 @@ var renderPdf = function (session, file, cb) {
 			page = _page;
       		page.set('paperSize', { 'format': 'A4' }, function () {
   				page.open('html/index.html', function (status) {
-					page.evaluate(function () {
+  					page.evaluate(function () {
 						$('#test').html("This was added at runtime");
 					}, function () {
 						page.render(file, function() {
@@ -29,7 +29,7 @@ var renderPdf = function (session, file, cb) {
 							return cb(null, file);
 						});
 					});
-  				});
+	  			});
 			});
     	});
 	} catch(e) {

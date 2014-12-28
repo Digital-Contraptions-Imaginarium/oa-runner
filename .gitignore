@@ -2,6 +2,7 @@ node_modules
 etc
 *.csv
 *.json
+*.pdf
 .Rproj.user
 *.Rproj
 .RData
