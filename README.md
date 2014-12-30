@@ -5,9 +5,6 @@ oa-runner is a collection of scripts to support runners who want to contribute t
 
 **NOTE: this is a working prototype only**, but you are very welcome to feedback and contribute. Please use this repository's [issues section](https://github.com/Digital-Contraptions-Imaginarium/oa-runner/issues).
 
-##Compatibility
-- This software has been tested against the *.fit* files created by a [Garmin Fēnix 2 multisport watch](https://buy.garmin.com/en-GB/GB/watches-wearable-technology/wearables/fenix-2/prod159116.html). We presume that their format and conventions (e.g. the column names in the *.csv* files that can be extracted from the *.fit*) will be consistent at least across other Garmin models, but did not test that yet. Do you own any other fitness device that uses the *.fit* format? Please offer your help in the [issues section](https://github.com/Digital-Contraptions-Imaginarium/oa-runner/issues).
-
 ##Setup
 - Setup any recent Java runtime environment suitable to your system, so that it can run from the command line using the *java* command. This is required to run the *FitCSVTool* tool, part of the FIT SDK. We did our testing using Apple MacOS' Java SE runtime environment version 1.7.0_21.
 - Install the [PhantomJS](http://phantomjs.org/) command line utility. On MacOS, using [Homebrew](http://brew.sh/), it's as simple as:
@@ -16,7 +13,7 @@ oa-runner is a collection of scripts to support runners who want to contribute t
 	brew install phantomjs
 	```
 
-- Download the FIT SDK from [http://www.thisisant.com/resources/fit](http://www.thisisant.com/resources/fit) and uncompress it in *etc* (e.g. *etc/FitSDKRelease13.10*).
+- If you want to use *.fit* files, download the FIT SDK from [http://www.thisisant.com/resources/fit](http://www.thisisant.com/resources/fit) and uncompress it in *etc* (e.g. *etc/FitSDKRelease13.10*).
 - Download the latest CSV edition of Office for National Statistics' "Postcode Directory" Open Data dataset from [https://geoportal.statistics.gov.uk/geoportal/catalog/content/filelist.page?redirect=Docs/PostCodes/](https://geoportal.statistics.gov.uk/geoportal/catalog/content/filelist.page?redirect=Docs/PostCodes/) and uncompress it in *data* (e.g. *data/ONSPD_NOV_2014_csv*).
 - Use the *tools/drop-terminated-postcodes.js* script to drop from the above dataset all terminated postcodes and create a new file with the remaining ones, e.g.
 
@@ -33,14 +30,18 @@ oa-runner is a collection of scripts to support runners who want to contribute t
 
 ##Run
 ###If you don't have a favourite course
-The example below creates a JSON file called *investigationOptions.json* that includes an list of address investigation options that are about a certain specified total run distance (including to and back, in miles) from a starting point provided as an input. Don't worry if you don't know your starting point, [read here](/docs/where-am-i.md). Note how the reduced version of the ONSPD dataset produced following the setup instructions above is given as an input.
+The example below creates a JSON file called *investigationOptions.json* that includes an list of address investigation options that are about a certain specified total run distance (including to and back, in miles) from a starting point provided as an input. 
+
+Don't worry if you don't know your starting point, [read here](/docs/where-am-i.md). 
+
+Note how the reduced version of the ONSPD dataset produced following the setup instructions above is given as an input.
 
 ```
 > node oarunner.js --lat=51.759733 --lon=-0.577663 --distance=3 --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv > investigationOptions.json
 ```
 
 ###If you have a favourite course
-The example below instead creates a JSON file called *investigationOptions-fit.json* that includes an list of address investigation options that are most suitable to the course specified in the *.fit* file provided as an input. 
+If you own a fitness device that can save your activity data to *.fit* format, the example below instead creates a JSON file called *investigationOptions-fit.json* that includes an list of address investigation options that are most suitable to the course specified in the *.fit* file provided as an input. 
 
 ```
 > node oarunner.js --fit=data/fit-samples/2014-12-24-11-11-15-Navigate.fit --fitsdk=etc/FitSDKRelease13.10/ --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv > investigationOptions-fit.json 
@@ -75,8 +76,10 @@ The investigation options are ordered by proximity to the middle of your course.
 
 The proposed postcodes are those whose centroid is within 50 yards (can be changed using the *--distance* command line parameter) from the running course in the specified *.fit* file. In theory, this means that investigating the addresses won't take the runner too far from her planned course. By default, not all points in the course are used, but one every ~220 yards (the *--sample* parameter). 
 
+##Compatibility
+- If you want to use *oa-runner* by specifying a favourite running course and you own a fitness device / watch, at the moment we support *.fit* files only. Testing was done using files created by a [Garmin Fēnix 2 multisport watch](https://buy.garmin.com/en-GB/GB/watches-wearable-technology/wearables/fenix-2/prod159116.html). We presume that their format and conventions (e.g. the column names in the *.csv* files that can be extracted from the *.fit*) will be consistent at least across other Garmin models, but did not test that yet. Do you own any other fitness device that uses the *.fit* format? Please offer your help in the [issues section](https://github.com/Digital-Contraptions-Imaginarium/oa-runner/issues).
+
 ##TODO
-- No need to own a fitness device and give a *.fit* file as an input! Just specify a target distance to be run *as the crow flies* and look for investigation opportunities there.
 - The investigation options should not simply list the addresses that are already known to OA, but list what we're asking the runner to check! E.g. the script could do basic inference on missing PAOs and ask the runner to check if they exist for real, or confirm that they don't.
 - All investigation options should be formatted in a format suitable for printing, so that the runner can take them with her. QR codes could be associated to each possible scenario being investigated, e.g. there could be one QR to say that 22 Bridge Street exists and another QR to say that it does not.
 
