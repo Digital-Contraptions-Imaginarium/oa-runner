@@ -50,6 +50,9 @@ If you own a fitness device that can save your activity data to *.fit* format, t
 ###The results
 The results file is a list of postcodes suitable for surveying, in JSON format. Don't worry, I am working already at making the same into a human-readable PDF file, ready for the volunteer to print and take with her. 
 
+<blockquote class="twitter-tweet" lang="en"><p>Would you take oa-runner out for a spin and contribute to <a href="https://twitter.com/openaddressesuk">@openaddressesuk</a> ? <a href="http://t.co/dEYhFtMxGZ">http://t.co/dEYhFtMxGZ</a> <a href="https://twitter.com/hashtag/OpenData?src=hash">#OpenData</a> <a href="http://t.co/iCrHH9CUkS">pic.twitter.com/iCrHH9CUkS</a></p>&mdash; Gianfranco Cecconi (@giacecco) <a href="https://twitter.com/giacecco/status/549148052754530304">December 28, 2014</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
 Each postcode is described by:
 
 - *postcode*: describing the postcode to be investigated, its lat/lon and the course's closest point, e.g.
