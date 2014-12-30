@@ -31,9 +31,9 @@ var async = require('async'),
 			if (!ok) throw new Error("You must either specify the starting position (--lat, --lon and --distance) or the preferred course (--fit).");
 		})
 		.argv,
-	onspdReader = new require('./onspd-reader')(argv.onspd),
-	oaReader = new require('./oa-reader')(argv.oa),
-	inferenceEngine = new require('./toy-inference.js')();
+	onspdReader = new require('./lib/onspd-reader')(argv.onspd),
+	oaReader = new require('./lib/oa-reader')(argv.oa),
+	inferenceEngine = new require('./lib/toy-inference.js')();
 
 // This test script identifies the addresses known to Open Addresses that are 
 // closer to the middle of the course 
@@ -89,7 +89,7 @@ var stage2 = function (points, latLonFunction, minDistanceKm, maxDistanceKm) {
 var stage1 = function () {
 	if (argv.fit) {
 		// the user has requested to find survey options around a.fit course
-		var fitReader = new require('./fit-reader')(argv.fitsdk);
+		var fitReader = new require('./lib/fit-reader')(argv.fitsdk);
 		fitReader.fetchCourse(argv.fit, parseFloat(argv.sample) * 0.9144, function (err, points) {
 			stage2(
 				points, 

@@ -15,5 +15,5 @@ Click on the blue dot at the centre of the map and see your coordinates in the b
 You will then call *oa-runner* by specifying:
 
 ```
-> node main.js --lat=51.759733 --lon=-0.577663 [etc. etc.]
+> node oarunner.js --lat=51.759733 --lon=-0.577663 [etc. etc.]
 ```
