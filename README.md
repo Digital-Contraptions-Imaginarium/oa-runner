@@ -30,7 +30,7 @@ oa-runner is a collection of scripts to support runners and ramblers who want to
 
 ##Run
 ###If you don't have a favourite course
-The example below creates a JSON file called *investigationOptions.json* that includes an list of address surveying options that are about 3 miles (to and back) from the Open Addresses offices in London. 
+The example below creates a JSON file called *investigationOptions.json* that includes a list of address surveying options that are about 3 miles (to and back) from the Open Addresses offices in London. 
 
 Don't worry if you don't know your starting point, [read here](/docs/where-am-i.md). 
 
@@ -41,14 +41,16 @@ Note how the reduced version of the ONSPD dataset produced following the setup i
 ```
 
 ###If you have a favourite course
-If you own a fitness device that can save your activity data to *.fit* format, the example below instead creates a JSON file called *investigationOptions-fit.json* that includes an list of address surveying options that are most suitable to the course specified in the *.fit* file provided as an input. 
+If you own a fitness device that can save your activity data to *.fit* format, the example below creates a JSON file called *investigationOptions-fit.json* that includes a list of address surveying options that are most suitable to the course specified in the *.fit* file provided as an input. 
 
 ```
 > node oarunner.js --fit=data/fit-samples/2014-12-24-11-11-15-Navigate.fit --fitsdk=etc/FitSDKRelease13.10/ --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv > investigationOptions-fit.json 
 ```
 
-###The resuts
-The results file is a list of postcodes suitable for surveying. Each postcode is described by:
+###The results
+The results file is a list of postcodes suitable for surveying, in JSON format. Don't worry, I am working already at making the same into a human-readable PDF file, ready for the volunteer to print and take with her. 
+
+Each postcode is described by:
 
 - *postcode*: describing the postcode to be investigated, its lat/lon and the course's closest point, e.g.
 
