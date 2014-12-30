@@ -17,8 +17,8 @@ module.exports = function (onspdNonTerminatedCsvFile) {
 			callback = options;
 			options = { };
 		}
-		if (!options.minDistanceKm) minDistanceKm = 0.;
-		if (!options.latLonFunction) latLonFunction = function (point) { return point; };
+		if (!options.minDistanceKm) options.minDistanceKm = 0.;
+		if (!options.latLonFunction) options.latLonFunction = function (point) { return point; };
 		csv()
 			.from.path(onspdNonTerminatedCsvFile, {
 				'columns': true,
@@ -31,7 +31,7 @@ module.exports = function (onspdNonTerminatedCsvFile) {
 				var latLon = OsGridRef.osGridToLatLong(new OsGridRef(row.oseast1m, row.osnrth1m)),
 					closestPoints = _.filter(points, function (point) {
 						var distance = parseFloat(latLon.distanceTo(options.latLonFunction(point)));
-						return (distance >= minDistanceKm) && (distance <= options.maxDistanceKm);
+						return (distance >= options.minDistanceKm) && (distance <= options.maxDistanceKm);
 					}).sort(function (a, b) {
 						return parseFloat(latLon.distanceTo(options.latLonFunction(a))) - parseFloat(latLon.distanceTo(options.latLonFunction(b)));
 					}); 

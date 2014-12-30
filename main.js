@@ -6,22 +6,31 @@ var async = require('async'),
 	fs = require('fs-extra')
 	path = require('path'),
 	argv = require('yargs')
-		.demand([ 'oa', 'onspd', 'fit', 'fitsdk', 'distance', 'sample' ])
-		// The default max distance between the course and the surrounding
+		.demand([ 'oa', 'onspd', 'deviation', 'sample' ])
+		// The default max deviation between the course and the surrounding
 		// postcode centroids is 50 yards (~46 meters). The smaller this value, 
 		// the less we are diverting the runner from her course to check an 
 		// address.
-		.default('distance', 50.) // yards
+		.default('deviation', 50.) // yards
 		// The default course sample is 220 yards. On a ~3 miles run this 
 		// filters the course from a few thousands down to about 25 points. 
 		// The combination of 50 yards distance and 220 yards sample identifies
 		// 23 candidate postcodes on @giacecco's standard hometown run
 		// (e.g. http://dico.im/145XqiJ ). 
 		.default('sample', 220.) // yards 
-		.alias('f', 'fit')
-		.alias('o', 'onspd')
+		.check(function (argv) {
+			var ok = !argv.fit || (argv.fit && argv.fitsdk) || false;
+			if (!ok) throw new Error('If specifying --fit, the location of the Fit SDK must be specified, too, using --fitsdk.');
+		})
+		.check(function (argv) {
+			var ok = (!argv.lat && !argv.lon && !argv.distance) || (argv.lat && argv.lon && argv.distance) || false;
+			if (!ok) throw new Error("The --lat, --lon and --distance parameters must be specified together.");
+		})
+		.check(function (argv) {
+			var ok = argv.fit || argv.lat || false;
+			if (!ok) throw new Error("You must either specify the starting position (--lat, --lon and --distance) or the preferred course (--fit).");
+		})
 		.argv,
-	fitReader = new require('./fit-reader')(argv.fitsdk),
 	onspdReader = new require('./onspd-reader')(argv.onspd),
 	oaReader = new require('./oa-reader')(argv.oa),
 	inferenceEngine = new require('./toy-inference.js')();
@@ -55,14 +64,13 @@ var generateInvestigationOptions = function (coursePostcodes, callback) {
 };
 
 
-// home is LatLon(51.759467, -0.577358);
-// Berkhamsted station is LatLon(51.764541, -0.562041);
-fitReader.fetchCourse(argv.fit, parseFloat(argv.sample) * 0.9144, function (err, points) {
+var stage2 = function (points, latLonFunction, minDistanceKm, maxDistanceKm) {
 	onspdReader.fetchNearbyPostcodes(
 		points, 
 		{ 
-			'latLonFunction': function (point) { return point.position; }, 
-		  	'maxDistanceKm': parseFloat(argv.distance) * 0.0009144, 
+			'latLonFunction': latLonFunction, 
+		  	'minDistanceKm': minDistanceKm, 
+		  	'maxDistanceKm': maxDistanceKm, 
 		},
 		function (err, coursePostcodes) {
 			generateInvestigationOptions(coursePostcodes, function (err, investigationOptions) {
@@ -76,4 +84,42 @@ fitReader.fetchCourse(argv.fit, parseFloat(argv.sample) * 0.9144, function (err,
 				});
 			});
 		});
-});
+}
+
+var stage1 = function () {
+	if (argv.fit) {
+		// the user has requested to find survey options around a.fit course
+		var fitReader = new require('./fit-reader')(argv.fitsdk);
+		fitReader.fetchCourse(argv.fit, parseFloat(argv.sample) * 0.9144, function (err, points) {
+			stage2(
+				points, 
+				function (point) { return point.position; }, 
+				0., 
+				parseFloat(argv.deviation) * 0.0009144
+			);
+		});
+	} else if (argv.lat && argv.lon && argv.distance) {
+		// the user has requested to find survey options at a given distance
+		// from a starting point
+		eval(fs.readFileSync(path.join(__dirname, 'lib', 'latlon.js')) + '');
+		// Note the calculation below. I need to transform the target return
+		// run length into an 'as the crow flies' ray, in order to find the 
+		// target postcodes. As this is supposed to be an 'urban run', I presume
+		// that they ray is the hypotenuse of a right angle and the sum of the
+		// two sides is what the runner will actually have to run, twice (to and
+		// back).  
+		var searchAreaRayKm = Math.sqrt((parseFloat(argv.distance) * 1.609344 / 2 / 2) ^ 2 * 2);
+		stage2(
+			[ new LatLon(parseFloat(argv.lat), parseFloat(argv.lon)) ], 
+			function (point) { return point; }, 
+			searchAreaRayKm - parseFloat(argv.deviation) * 0.0009144, 
+			searchAreaRayKm + parseFloat(argv.deviation) * 0.0009144
+		);
+	} else {
+		// you should never get here thanks to the yargs checks
+	}
+}
+
+// home is LatLon(51.759467, -0.577358);
+// Berkhamsted station is LatLon(51.764541, -0.562041);
+stage1();

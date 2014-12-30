@@ -32,10 +32,16 @@ oa-runner is a collection of scripts to support runners who want to contribute t
 	```
 
 ##Run
-The example below creates a JSON file called *investigationOptions.json* that includes an list of address investigation options that are most suitable to the course specified in the *.fit* file provided as an input. Note how the reduced version of the ONSPD dataset produced following the setup instructions above is given as an input. 
+The example below creates a JSON file called *investigationOptions.json* that includes an list of address investigation options that are about a certain specified total run distance (including to and back, in miles) from a starting point provided as an input. Note how the reduced version of the ONSPD dataset produced following the setup instructions above is given as an input.
 
 ```
-node main.js --fit data/fit-samples/2014-12-24-11-11-15-Navigate.fit --fitsdk etc/FitSDKRelease13.10/ --oa data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv > investigationOptions.json 
+> node main.js --lat=51.759467 --lon=-0.577358 --distance=3 --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv > investigationOptions.json
+```
+
+The example below instead creates a JSON file called *investigationOptions-fit.json* that includes an list of address investigation options that are most suitable to the course specified in the *.fit* file provided as an input. 
+
+```
+> node main.js --fit=data/fit-samples/2014-12-24-11-11-15-Navigate.fit --fitsdk=etc/FitSDKRelease13.10/ --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv > investigationOptions-fit.json 
 ```
 
 Each element in the array is made of:
@@ -59,6 +65,8 @@ Each element in the array is made of:
 	```
 
 - *relevantOaAddresses*: an array of all Open Addresses addresses that belong to that postcode, in their native OA JSON format.
+
+- *inferredAddresses*: an array of all addresses inferred for that postcode, in the OA JSON format but for the elements that could not be determined (e.g. obviously the URI associated by OA to addresses).
 
 The investigation options are ordered by proximity to the middle of your course. The underlying idea is that the runner's mission is to run to and back from the address to be investigated :-) 
 
