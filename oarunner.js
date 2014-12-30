@@ -36,8 +36,10 @@ var async = require('async'),
 	inferenceEngine = new require('./lib/toy-inference.js')();
 
 // This test script identifies the addresses known to Open Addresses that are 
-// closer to the middle of the course 
-var generateInvestigationOptions = function (coursePostcodes, callback) {
+// at the target distance / closer to the middle of the specified course. 
+// TODO: the sorting below is useless when not using the --fit option, perhaps
+// I should make the code work properly rather than by chance here
+var generateSurveyingOptions = function (coursePostcodes, callback) {
 	// the ideal postcode to be investigated is in the middle of the course; in
 	// a way the entire course can be seen as a run to the postcode to be
 	// investigated and back
@@ -63,7 +65,6 @@ var generateInvestigationOptions = function (coursePostcodes, callback) {
 	});
 };
 
-
 var stage2 = function (points, latLonFunction, minDistanceKm, maxDistanceKm) {
 	onspdReader.fetchNearbyPostcodes(
 		points, 
@@ -73,7 +74,7 @@ var stage2 = function (points, latLonFunction, minDistanceKm, maxDistanceKm) {
 		  	'maxDistanceKm': maxDistanceKm, 
 		},
 		function (err, coursePostcodes) {
-			generateInvestigationOptions(coursePostcodes, function (err, investigationOptions) {
+			generateSurveyingOptions(coursePostcodes, function (err, investigationOptions) {
 				async.reduce(investigationOptions, [ ], function (memo, o, callback) {
 					inferenceEngine.doTheInferenceMagic(o.relevantOaAddresses, function (err, inferredAddresses) {
 						// unless at least one address is inferred, drop the 
