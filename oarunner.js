@@ -74,12 +74,17 @@ var stage2 = function (points, latLonFunction, minDistanceKm, maxDistanceKm) {
 		},
 		function (err, coursePostcodes) {
 			generateInvestigationOptions(coursePostcodes, function (err, investigationOptions) {
-				async.each(investigationOptions, function (o, callback) {
+				async.reduce(investigationOptions, [ ], function (memo, o, callback) {
 					inferenceEngine.doTheInferenceMagic(o.relevantOaAddresses, function (err, inferredAddresses) {
-						o.inferredAddresses = inferredAddresses;
-						callback(null);
+						// unless at least one address is inferred, drop the 
+						// postcode from the investigation options
+						if (inferredAddresses.length > 0) {
+							o.inferredAddresses = inferredAddresses;
+							memo = memo.concat(o);
+						}
+						callback(null, memo);
 					});
-				}, function (err) {
+				}, function (err, investigationOptions) {
 					console.log(JSON.stringify(investigationOptions));
 				});
 			});
