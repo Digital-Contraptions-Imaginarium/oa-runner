@@ -18,6 +18,9 @@ var async = require('async'),
 		// 23 candidate postcodes on @giacecco's standard hometown run
 		// (e.g. http://dico.im/145XqiJ ). 
 		.default('sample', 220.) // yards 
+		// of the identified options, which should go to the PDF? the default is
+		// the best one
+		.default('option', 1)
 		.check(function (argv) {
 			var ok = !argv.fit || (argv.fit && argv.fitsdk) || false;
 			if (!ok) throw new Error('If specifying --fit, the location of the Fit SDK must be specified, too, using --fitsdk.');
@@ -33,7 +36,8 @@ var async = require('async'),
 		.argv,
 	onspdReader = new require('./lib/onspd-reader')(argv.onspd),
 	oaReader = new require('./lib/oa-reader')(argv.oa),
-	inferenceEngine = new require('./lib/toy-inference.js')();
+	inferenceEngine = new require('./lib/toy-inference')(),
+	pdfMaker = new require('./lib/pdf-maker')();
 
 // This test script identifies the addresses known to Open Addresses that are 
 // at the target distance / closer to the middle of the specified course. 
@@ -86,7 +90,19 @@ var stage2 = function (points, latLonFunction, minDistanceKm, maxDistanceKm) {
 						callback(null, memo);
 					});
 				}, function (err, investigationOptions) {
-					console.log(JSON.stringify(investigationOptions));
+					if (argv.pdf) {
+						// if the --pdf argument is specified, the top survey
+						// option goes to the PDF file specified
+						pdfMaker.makePdf(argv.pdf, investigationOptions[Math.max(0, Math.min(investigationOptions.length - 1, argv.option - 1))], function (err) { 
+							// note that the pdf-maker library requires the process to exit explicitly
+							process.exit(0);
+						});
+					} else {
+						// otherwise all survey options are printed in JSON 
+						// format to standard output
+						console.log(JSON.stringify(investigationOptions));
+						process.exit(0);
+					}
 				});
 			});
 		});

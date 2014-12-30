@@ -3,17 +3,18 @@ oa-runner
 
 oa-runner is a collection of scripts to support runners and ramblers who want to contribute to [Open Addresses UK](http://openaddressesuk.org) by surveying addresses that are located at a given distance or nearby their planned courses.
 
-**NOTE: this is a working prototype only**, but you are very welcome to feedback and contribute. Please use this repository's [issues section](https://github.com/Digital-Contraptions-Imaginarium/oa-runner/issues).
+**NOTE: this is a working prototype only**, and Open Addresses is not yet ready to automatically process the outcome of your survey (when you scan the QR codes in the survey forms). You are very welcome to feedback and contribute, though: Please use this repository's [issues section](https://github.com/Digital-Contraptions-Imaginarium/oa-runner/issues).
 
 ##Setup
-- Setup any recent Java runtime environment suitable to your system, so that it can run from the command line using the *java* command. This is required to run the *FitCSVTool* tool, part of the FIT SDK. We did our testing using Apple MacOS' Java SE runtime environment version 1.7.0_21.
-- Install the [PhantomJS](http://phantomjs.org/) command line utility. On MacOS, using [Homebrew](http://brew.sh/), it's as simple as:
+- Install the [PhantomJS](http://phantomjs.org/) command line utility. This is required to create PDF files. On MacOS, using [Homebrew](http://brew.sh/), it's as simple as:
 
 	```
 	brew install phantomjs
 	```
 
-- If you want to use *.fit* files, download the FIT SDK from [http://www.thisisant.com/resources/fit](http://www.thisisant.com/resources/fit) and uncompress it in *etc* (e.g. *etc/FitSDKRelease13.10*).
+- If you want to use *.fit* files:
+  - Setup any recent Java runtime environment suitable to your system, so that it can run from the command line using the *java* command. This is required to run the *FitCSVTool* tool, part of the FIT SDK. We did our testing using Apple MacOS' Java SE runtime environment version 1.7.0_21.  
+  - Download the FIT SDK from [http://www.thisisant.com/resources/fit](http://www.thisisant.com/resources/fit) and uncompress it in *etc* (e.g. *etc/FitSDKRelease13.10*).
 - Download the latest CSV edition of Office for National Statistics' "Postcode Directory" Open Data dataset from [https://geoportal.statistics.gov.uk/geoportal/catalog/content/filelist.page?redirect=Docs/PostCodes/](https://geoportal.statistics.gov.uk/geoportal/catalog/content/filelist.page?redirect=Docs/PostCodes/) and uncompress it in *data* (e.g. *data/ONSPD_NOV_2014_csv*).
 - Use the *tools/drop-terminated-postcodes.js* script to drop from the above dataset all terminated postcodes and create a new file with the remaining ones, e.g.
 
@@ -30,21 +31,29 @@ oa-runner is a collection of scripts to support runners and ramblers who want to
 
 ##Run
 ###If you don't have a favourite course
-The example below creates a JSON file called *investigationOptions.json* that includes a list of address surveying options that are about 3 miles (to and back) from the Open Addresses offices in London. 
+The example below creates a PDF file called [*bestSurveyOptions-distance.pdf*](samples/pdf/surveyOptions-distance.pdf) with the best survey option being identified to be about 3 miles (to and back) from the Open Addresses offices in London. 
 
 Don't worry if you don't know your starting point, [read here](/docs/where-am-i.md). 
 
 Note how the reduced version of the ONSPD dataset produced following the setup instructions above is given as an input.
 
 ```
-> node oarunner.js --lat=51.522342 --lon=-0.083476 --distance=3 --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv > investigationOptions.json
+> node oarunner.js --lat=51.522342 --lon=-0.083476 --distance=3 --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv --pdf bestSurveyOptions-distance.pdf
 ```
 
 ###If you have a favourite course
-If you own a fitness device that can save your activity data to *.fit* format, the example below creates a JSON file called *investigationOptions-fit.json* that includes a list of address surveying options that are most suitable to the course specified in the *.fit* file provided as an input. 
+If you own a fitness device that can save your activity data to *.fit* format, the example below creates a PDF file called *bestSurveyOptions-course.pdf* with the best of the address survey options identified along the course specified in the *.fit* file provided as an input. 
 
 ```
-> node oarunner.js --fit=data/fit-samples/2014-12-24-11-11-15-Navigate.fit --fitsdk=etc/FitSDKRelease13.10/ --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv > investigationOptions-fit.json 
+> node oarunner.js --fit=samples/fit/2014-12-24-11-11-15-Navigate.fit --fitsdk=etc/FitSDKRelease13.10/ --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv --pdf bestSurveyOptions-course.pdf 
+```
+
+If you don't want the top survey option being identified but another one, just specify *--option* argument; e.g. ```--option=2``` gives you the 2nd best.
+
+When you do not specify the *--pdf* argument, a JSON file with the full list of survey options is printed to screen. You can save it to file by simply doing:
+
+```
+> node oarunner.js --lat=51.522342 --lon=-0.083476 --distance=3 --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv > all-surveyOptions-distance.json
 ```
 
 ###The results
