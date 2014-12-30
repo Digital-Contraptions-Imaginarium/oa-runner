@@ -58,16 +58,22 @@ var generateInvestigationOptions = function (coursePostcodes, callback) {
 // home is LatLon(51.759467, -0.577358);
 // Berkhamsted station is LatLon(51.764541, -0.562041);
 fitReader.fetchCourse(argv.fit, parseFloat(argv.sample) * 0.9144, function (err, points) {
-	onspdReader.fetchNearbyPostcodes(points, function (point) { return point.position; }, parseFloat(argv.distance) * 0.0009144, function (err, coursePostcodes) {
-		generateInvestigationOptions(coursePostcodes, function (err, investigationOptions) {
-			async.each(investigationOptions, function (o, callback) {
-				inferenceEngine.doTheInferenceMagic(o.relevantOaAddresses, function (err, inferredAddresses) {
-					o.inferredAddresses = inferredAddresses;
-					callback(null);
+	onspdReader.fetchNearbyPostcodes(
+		points, 
+		{ 
+			'latLonFunction': function (point) { return point.position; }, 
+		  	'maxDistanceKm': parseFloat(argv.distance) * 0.0009144, 
+		},
+		function (err, coursePostcodes) {
+			generateInvestigationOptions(coursePostcodes, function (err, investigationOptions) {
+				async.each(investigationOptions, function (o, callback) {
+					inferenceEngine.doTheInferenceMagic(o.relevantOaAddresses, function (err, inferredAddresses) {
+						o.inferredAddresses = inferredAddresses;
+						callback(null);
+					});
+				}, function (err) {
+					console.log(JSON.stringify(investigationOptions));
 				});
-			}, function (err) {
-				console.log(JSON.stringify(investigationOptions));
 			});
 		});
-	});
 });

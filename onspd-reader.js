@@ -12,12 +12,13 @@ module.exports = function (onspdNonTerminatedCsvFile) {
 	// If 'latLonFunction' is not specified, it is assumed that 'points' is an 
 	// array of LatLon objects as in Chris Veness' libraries; alternatively,
 	// 'latLonFunction' is used to extract the LatLon from the point.
-	var fetchNearbyPostcodes = function (points, latLonFunction, maxDistanceKm, callback) {
+	var fetchNearbyPostcodes = function (points, options, callback) {
 		if (!callback) {
-			callback = maxDistanceKm;
-			maxDistanceKm = latLonFunction;
-			latLonFunction = function (point) { return point; };
+			callback = options;
+			options = { };
 		}
+		if (!options.minDistanceKm) minDistanceKm = 0.;
+		if (!options.latLonFunction) latLonFunction = function (point) { return point; };
 		csv()
 			.from.path(onspdNonTerminatedCsvFile, {
 				'columns': true,
@@ -29,9 +30,10 @@ module.exports = function (onspdNonTerminatedCsvFile) {
 			.transform(function (row) {
 				var latLon = OsGridRef.osGridToLatLong(new OsGridRef(row.oseast1m, row.osnrth1m)),
 					closestPoints = _.filter(points, function (point) {
-						return parseFloat(latLon.distanceTo(latLonFunction(point))) <= maxDistanceKm;
+						var distance = parseFloat(latLon.distanceTo(options.latLonFunction(point)));
+						return (distance >= minDistanceKm) && (distance <= options.maxDistanceKm);
 					}).sort(function (a, b) {
-						return parseFloat(latLon.distanceTo(latLonFunction(a))) - parseFloat(latLon.distanceTo(latLonFunction(b)));
+						return parseFloat(latLon.distanceTo(options.latLonFunction(a))) - parseFloat(latLon.distanceTo(options.latLonFunction(b)));
 					}); 
 				return closestPoints.length > 0 ? 
 					{ 
