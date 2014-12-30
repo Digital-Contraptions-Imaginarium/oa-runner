@@ -31,21 +31,21 @@ oa-runner is a collection of scripts to support runners and ramblers who want to
 
 ##Run
 ###If you don't have a favourite course
-The example below creates a PDF file called [*bestSurveyOptions-distance.pdf*](samples/pdf/surveyOptions-distance.pdf) with the best survey option being identified to be about 3 miles (to and back) from the Open Addresses offices in London. 
+The example below creates a PDF file called [*bestSurveyOption-distance.pdf*](samples/pdf/surveyOptions-distance.pdf) with the best survey option being identified to be about 3 miles (to and back) from the Open Addresses offices in London. 
 
 Don't worry if you don't know your starting point, [read here](/docs/where-am-i.md). 
 
 Note how the reduced version of the ONSPD dataset produced following the setup instructions above is given as an input.
 
 ```
-> node oarunner.js --lat=51.522342 --lon=-0.083476 --distance=3 --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv --pdf bestSurveyOptions-distance.pdf
+> node oarunner.js --lat=51.522342 --lon=-0.083476 --distance=3 --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv --pdf bestSurveyOption-distance.pdf
 ```
 
 ###If you have a favourite course
-If you own a fitness device that can save your activity data to *.fit* format, the example below creates a PDF file called *bestSurveyOptions-course.pdf* with the best of the address survey options identified along the course specified in the *.fit* file provided as an input. 
+If you own a fitness device that can save your activity data to *.fit* format, the example below creates a PDF file called *bestSurveyOption-course.pdf* with the best of the address survey options identified along the course specified in the *.fit* file provided as an input. 
 
 ```
-> node oarunner.js --fit=samples/fit/2014-12-24-11-11-15-Navigate.fit --fitsdk=etc/FitSDKRelease13.10/ --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv --pdf bestSurveyOptions-course.pdf 
+> node oarunner.js --fit=samples/fit/2014-12-24-11-11-15-Navigate.fit --fitsdk=etc/FitSDKRelease13.10/ --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv --pdf bestSurveyOption-course.pdf 
 ```
 
 If you don't want the top survey option being identified but another one, just specify *--option* argument; e.g. ```--option=2``` gives you the 2nd best.
@@ -53,7 +53,7 @@ If you don't want the top survey option being identified but another one, just s
 When you do not specify the *--pdf* argument, a JSON file with the full list of survey options is printed to screen. You can save it to file by simply doing:
 
 ```
-> node oarunner.js --lat=51.522342 --lon=-0.083476 --distance=3 --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv > all-surveyOptions-distance.json
+> node oarunner.js --lat=51.522342 --lon=-0.083476 --distance=3 --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv > allSurveyOptions-distance.json
 ```
 
 ###The results
