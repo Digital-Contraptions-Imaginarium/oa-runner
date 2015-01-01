@@ -98,6 +98,8 @@ The proposed postcodes are those whose centroid is within 50 yards (can be chang
 ##Licence
 Northing/Easting to Latitude/Longitude conversion in JavaScript code is done using Chris Veness' libraries, available at [http://www.movable-type.co.uk/scripts/latlong-gridref.html](http://www.movable-type.co.uk/scripts/latlong-gridref.html) and included in this repository for convenience. The libraries are licensed under CC-BY 3.0 and implement the algorithms described by Ordnance Survey in the "A guide to coordinate systems in Great Britain" document at [www.ordnancesurvey.co.uk/docs/support/guide-coordinate-systems-great-britain.pdf](www.ordnancesurvey.co.uk/docs/support/guide-coordinate-systems-great-britain.pdf).
 
+The word "QR Code" is a registered trademark of DENSO WAVE INCORPORATED, see [http://www.denso-wave.com/qrcode/faqpatent-e.html](http://www.denso-wave.com/qrcode/faqpatent-e.html).
+
 QR codes are generated using Shim Sangmin's *qrcode.js* library, available at [https://github.com/davidshimjs/qrcodejs](https://github.com/davidshimjs/qrcodejs) and included in this repository for convenience. It is copyright (c) Shim Sangmin (davidshimjs) and licensed under the terms of the MIT licence.
 
 The project uses many other Open Source libraries that are referenced in the [*package.json*]([package.json]) file but not distributed within this repository.
