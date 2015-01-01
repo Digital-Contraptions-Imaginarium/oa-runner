@@ -144,4 +144,11 @@ var stage1 = function () {
 
 // home is LatLon(51.759467, -0.577358);
 // Berkhamsted station is LatLon(51.764541, -0.562041);
-stage1();
+// stage1();
+var testData = fs.readJsonSync('surveyOptions-distance.json')[0];
+testData.inferredAddresses = _.first(testData.inferredAddresses, 2);
+console.log(JSON.stringify(testData.inferredAddresses));
+pdfMaker.makePdf(argv.pdf, testData, function (err) { 
+	// note that the pdf-maker library requires the process to exit explicitly
+	process.exit(0);
+});
