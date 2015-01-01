@@ -6,12 +6,6 @@ oa-runner is a collection of scripts to support runners and ramblers who want to
 **NOTE: this is a working prototype only**, and Open Addresses is not yet ready to automatically process the outcome of your survey (when you scan the QR codes in the survey forms). You are very welcome to feedback and contribute, though: Please use this repository's [issues section](https://github.com/Digital-Contraptions-Imaginarium/oa-runner/issues).
 
 ##Setup
-- Install the [PhantomJS](http://phantomjs.org/) command line utility. This is required to create PDF files. On MacOS, using [Homebrew](http://brew.sh/), it's as simple as:
-
-	```
-	brew install phantomjs
-	```
-
 - If you want to use *.fit* files:
   - Setup any recent Java runtime environment suitable to your system, so that it can run from the command line using the *java* command. This is required to run the *FitCSVTool* tool, part of the FIT SDK. We did our testing using Apple MacOS' Java SE runtime environment version 1.7.0_21.  
   - Download the FIT SDK from [http://www.thisisant.com/resources/fit](http://www.thisisant.com/resources/fit) and uncompress it in *etc* (e.g. *etc/FitSDKRelease13.10*).
@@ -31,37 +25,37 @@ oa-runner is a collection of scripts to support runners and ramblers who want to
 
 ##Run
 ###If you don't have a favourite course
-The example below creates a PDF file called [*bestSurveyOption-distance.pdf*](samples/pdf/surveyOptions-distance.pdf) with the best survey option being identified to be about 3 miles (to and back) from the Open Addresses offices in London. 
+The example below creates an HTML file called [*bestSurveyOption-distance.html*](samples/html/surveyOption-distance.html) with the best survey option being identified to be about 3 miles (to and back) from the Open Addresses offices in London. It can take several minutes to complete, just be patient and wait :-)
 
 Don't worry if you don't know your starting point, [read here](/docs/where-am-i.md). 
 
 Note how the reduced version of the ONSPD dataset produced following the setup instructions above is given as an input.
 
 ```
-> node oarunner.js --lat=51.522342 --lon=-0.083476 --distance=3 --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv --pdf bestSurveyOption-distance.pdf
+> node oarunner.js --lat=51.522342 --lon=-0.083476 --distance=3 --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv --html bestSurveyOption-distance.html
 ```
 
 ###If you have a favourite course
-If you own a fitness device that can save your activity data to *.fit* format, the example below creates a PDF file called *bestSurveyOption-course.pdf* with the best of the address survey options identified along the course specified in the *.fit* file provided as an input. 
+If you own a fitness device that can save your activity data to *.fit* format, the example below creates a HTML file called [*bestSurveyOption-course.html*](samples/html/bestSurveyOption-course.html) with the best of the address survey options identified along the course specified in the *.fit* file provided as an input. 
 
 ```
-> node oarunner.js --fit=samples/fit/2014-12-24-11-11-15-Navigate.fit --fitsdk=etc/FitSDKRelease13.10/ --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv --pdf bestSurveyOption-course.pdf 
+> node oarunner.js --fit=samples/fit/2014-12-24-11-11-15-Navigate.fit --fitsdk=etc/FitSDKRelease13.10/ --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv --html bestSurveyOption-course.html 
 ```
 
-If you don't want the top survey option being identified but another one, just specify *--option* argument; e.g. ```--option=2``` gives you the 2nd best.
+The underlying idea is that the volunteer's mission is to get to and back from the address to be surveyed. Because of that, when specifying a course the survey options are sorted by proximity to the middle of that course. If the volunteer doesn't want the top survey option but another one (perhaps she's run that already) she can use the *--option* argument; e.g. ```--option=3``` will give her the 3rd best.
 
-When you do not specify the *--pdf* argument, a JSON file with the full list of survey options is printed to screen. You can save it to file by simply doing:
+When you do not specify the *--html* argument, a JSON file with the full list of survey options is printed to screen. [You can save it to file](samples/json/allSurveyOptions-distance.json) by simply doing:
 
 ```
 > node oarunner.js --lat=51.522342 --lon=-0.083476 --distance=3 --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv > allSurveyOptions-distance.json
 ```
 
 ###The results
-The results file is a list of postcodes suitable for surveying, in JSON format. Don't worry, I am working already at making the same into a human-readable PDF file, ready for the volunteer to print and take with her. 
+When saving to HTML, the output is a list of addresses suitable for surveying within the same postcode, ready for the volunteer to print and take with her. Each address is associated to three QR codes that the user can scan to tell Open Address what the outcome of the survey was. **Note that Open Addresses is not yet ready to collect this information** and the URLs behind the QR codes are, for the time being, just stabs. 
 
 ![](https://pbs.twimg.com/media/B573PoUIMAA_Qf2.jpg)
 
-Each postcode is described by:
+When saving to JSON, the file is an array with all identified survey options. Each survey option is made of:
 
 - *postcode*: describing the postcode to be investigated, its lat/lon and the course's closest point, e.g.
 
@@ -83,9 +77,7 @@ Each postcode is described by:
 
 - *relevantOaAddresses*: an array of all Open Addresses addresses that belong to that postcode, in their native OA JSON format.
 
-- *inferredAddresses*: an array of all addresses inferred for that postcode, in the OA JSON format but for the elements that could not be determined (e.g. obviously the URI associated by OA to addresses).
-
-When specifying a course, the investigation options are ordered by proximity to the middle of that course. The underlying idea is that the volunteer's mission is to get to and back from the address to be surveyed :-) 
+- *inferredAddresses*: an array of all addresses inferred for that postcode, in the OA JSON format but for the elements that could not be defined (e.g., obviously, the URI associated by OA to the addresses).
 
 The proposed postcodes are those whose centroid is within 50 yards (can be changed using the *--deviation* command line parameter) from the target distance / running course. In theory, this means that surveying the addresses won't take the volunteer too far from her planned distance or course. When specifying a course, not all points in the course are evaluated, but one every ~220 yards (the *--sample* parameter). 
 
@@ -102,6 +94,6 @@ The word "QR Code" is a registered trademark of DENSO WAVE INCORPORATED, see [ht
 
 QR codes are generated using Shim Sangmin's *qrcode.js* library, available at [https://github.com/davidshimjs/qrcodejs](https://github.com/davidshimjs/qrcodejs) and included in this repository for convenience. It is copyright (c) Shim Sangmin (davidshimjs) and licensed under the terms of the MIT licence.
 
-The project uses many other Open Source libraries that are referenced in the [*package.json*]([package.json]) file but not distributed within this repository.
+The project uses many other Open Source libraries that are referenced in the [HTML template for the survey forms](lib/html/index.html) and in the [*package.json*]([package.json]) file but not distributed within this repository.
 
 All other code is copyright (c) 2014 Digital Contraptions Imaginarium Ltd. and licensed under the terms of the [MIT licence](LICENCE.md).

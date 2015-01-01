@@ -37,7 +37,7 @@ var async = require('async'),
 	onspdReader = new require('./lib/onspd-reader')(argv.onspd),
 	oaReader = new require('./lib/oa-reader')(argv.oa),
 	inferenceEngine = new require('./lib/toy-inference')(),
-	pdfMaker = new require('./lib/pdf-maker')();
+	htmlMaker = new require('./lib/html-maker')();
 
 // This test script identifies the addresses known to Open Addresses that are 
 // at the target distance / closer to the middle of the specified course. 
@@ -90,18 +90,17 @@ var stage2 = function (points, latLonFunction, minDistanceKm, maxDistanceKm) {
 						callback(null, memo);
 					});
 				}, function (err, investigationOptions) {
-					if (argv.pdf) {
-						// if the --pdf argument is specified, the top survey
-						// option goes to the PDF file specified
-						pdfMaker.makePdf(argv.pdf, investigationOptions[Math.max(0, Math.min(investigationOptions.length - 1, argv.option - 1))], function (err) { 
-							// note that the pdf-maker library requires the process to exit explicitly
-							process.exit(0);
+					if (argv.html) {
+						// if the --html argument is specified, the top survey
+						// option goes to the html file specified
+						htmlMaker.makeHtml(argv.html, investigationOptions[Math.max(0, Math.min(investigationOptions.length - 1, argv.option - 1))], function (err) { 
+							// finished!
 						});
 					} else {
 						// otherwise all survey options are printed in JSON 
 						// format to standard output
 						console.log(JSON.stringify(investigationOptions));
-						process.exit(0);
+						// finished!
 					}
 				});
 			});
@@ -144,10 +143,4 @@ var stage1 = function () {
 
 // home is LatLon(51.759467, -0.577358);
 // Berkhamsted station is LatLon(51.764541, -0.562041);
-// stage1();
-var testData = fs.readJsonSync('surveyOptions-distance.json')[0];
-// testData.inferredAddresses = _.first(testData.inferredAddresses, 25);
-pdfMaker.makePdf(argv.pdf, testData, function (err) { 
-	// note that the pdf-maker library requires the process to exit explicitly
-	process.exit(0);
-});
+stage1();
