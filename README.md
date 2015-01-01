@@ -25,7 +25,7 @@ oa-runner is a collection of scripts to support runners and ramblers who want to
 
 ##Run
 ###If you don't have a favourite course
-The example below creates an HTML file called [*bestSurveyOption-distance.html*](samples/html/surveyOption-distance.html) with the best survey option being identified to be about 3 miles (to and back) from the Open Addresses offices in London. It can take several minutes to complete, just be patient and wait :-)
+The example below creates an HTML file called [*bestSurveyOption-distance.html*](samples/html/bestSurveyOption-distance.html) with the best survey option being identified to be about 3 miles (to and back) from the Open Addresses offices in London. It can take several minutes to complete, just be patient and wait :-)
 
 Don't worry if you don't know your starting point, [read here](/docs/where-am-i.md). 
 
@@ -51,7 +51,9 @@ When you do not specify the *--html* argument, a JSON file with the full list of
 ```
 
 ###The results
-When saving to HTML, the output is a list of addresses suitable for surveying within the same postcode, ready for the volunteer to print and take with her. Each address is associated to three QR codes that the user can scan to tell Open Address what the outcome of the survey was. **Note that Open Addresses is not yet ready to collect this information** and the URLs behind the QR codes are, for the time being, just stabs. 
+When saving to HTML, the output is a list of addresses suitable for surveying within the same postcode, ready for the volunteer to print and take with her. 
+
+Each address is associated to three QR codes that the user can scan to tell Open Address what the outcome of the survey was. **Note that Open Addresses is not yet ready to collect this information** and the URLs behind the QR codes are, for the time being, just stabs. 
 
 ![](https://pbs.twimg.com/media/B573PoUIMAA_Qf2.jpg)
 
@@ -84,15 +86,10 @@ The proposed postcodes are those whose centroid is within 50 yards (can be chang
 ##Compatibility
 - If you want to use *oa-runner* by specifying a favourite running course and you own a fitness device / watch, at the moment we support *.fit* files only. Testing was done using files created by a [Garmin Fēnix 2 multisport watch](https://buy.garmin.com/en-GB/GB/watches-wearable-technology/wearables/fenix-2/prod159116.html). We presume that their format and conventions (e.g. the column names in the *.csv* files that can be extracted from the *.fit*) will be consistent at least across other Garmin models, but did not test that yet. Do you own any other fitness device that uses the *.fit* format? Please offer your help in the [issues section](https://github.com/Digital-Contraptions-Imaginarium/oa-runner/issues).
 
-##TODO
-- All investigation options should be formatted in a format suitable for printing, so that the runner can take them with her. QR codes could be associated to each possible scenario being investigated, e.g. there could be one QR to say that 22 Bridge Street exists and another QR to say that it does not.
-
 ##Licence
 Northing/Easting to Latitude/Longitude conversion in JavaScript code is done using Chris Veness' libraries, available at [http://www.movable-type.co.uk/scripts/latlong-gridref.html](http://www.movable-type.co.uk/scripts/latlong-gridref.html) and included in this repository for convenience. The libraries are licensed under CC-BY 3.0 and implement the algorithms described by Ordnance Survey in the "A guide to coordinate systems in Great Britain" document at [www.ordnancesurvey.co.uk/docs/support/guide-coordinate-systems-great-britain.pdf](www.ordnancesurvey.co.uk/docs/support/guide-coordinate-systems-great-britain.pdf).
 
 The word "QR Code" is a registered trademark of DENSO WAVE INCORPORATED, see [http://www.denso-wave.com/qrcode/faqpatent-e.html](http://www.denso-wave.com/qrcode/faqpatent-e.html).
-
-QR codes are generated using Shim Sangmin's *qrcode.js* library, available at [https://github.com/davidshimjs/qrcodejs](https://github.com/davidshimjs/qrcodejs) and included in this repository for convenience. It is copyright (c) Shim Sangmin (davidshimjs) and licensed under the terms of the MIT licence.
 
 The project uses many other Open Source libraries that are referenced in the [HTML template for the survey forms](lib/html/index.html) and in the [*package.json*]([package.json]) file but not distributed within this repository.
 
