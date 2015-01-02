@@ -32,14 +32,14 @@ Don't worry if you don't know your starting point, [read here](/docs/where-am-i.
 Note how the reduced version of the ONSPD dataset produced following the setup instructions above is given as an input.
 
 ```
-> node oarunner.js --lat=51.522342 --lon=-0.083476 --distance=3 --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv --html bestSurveyOption-distance.html
+> node oarunner.js --lat=51.522342 --lon=-0.083476 --distance=3 --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv --html=bestSurveyOption-distance.html
 ```
 
 ###If you have a favourite course
 If you own a fitness device that can save your activity data to *.fit* format, the example below creates a HTML file called [*bestSurveyOption-course.html*](samples/html/bestSurveyOption-course.html) with the best of the address survey options identified along the course specified in the *.fit* file provided as an input. 
 
 ```
-> node oarunner.js --fit=samples/fit/2014-12-24-11-11-15-Navigate.fit --fitsdk=etc/FitSDKRelease13.10/ --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv --html bestSurveyOption-course.html 
+> node oarunner.js --fit=samples/fit/2014-12-24-11-11-15-Navigate.fit --fitsdk=etc/FitSDKRelease13.10/ --oa=data/open_addresses_database_2014-12-10-openaddressesuk-addresses-only-split.json/ --onspd=data/ONSPD_NOV_2014_csv/Data/ONSPD_NOV_2014_UK_not_terminated.csv --html=bestSurveyOption-course.html 
 ```
 
 The underlying idea is that the volunteer's mission is to get to and back from the address to be surveyed. Because of that, when specifying a course the survey options are sorted by proximity to the middle of that course. If the volunteer doesn't want the top survey option but another one (perhaps she's run that already) she can use the *--option* argument; e.g. ```--option=3``` will give her the 3rd best.
