@@ -7,7 +7,7 @@ oa-runner is a collection of scripts to support runners and ramblers who want to
 
 ##Run (literally... or walk)
 
-Don't try this before you completed [setup](./oa-runner#setup).
+Don't try this before you completed [setup](https://github.com/Digital-Contraptions-Imaginarium/oa-runner#setup).
 
 ###If you don't have a favourite course
 The example below creates an HTML file called [*bestSurveyOption-distance.html*](samples/html/bestSurveyOption-distance.html) with the best survey option being identified to be about 3 miles (to and back) from the Open Addresses offices in London.
