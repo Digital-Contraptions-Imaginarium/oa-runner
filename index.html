@@ -1,7 +1,7 @@
 <html>
     <head>
       <script src='https://code.jquery.com/jquery-2.1.3.min.js'></script>
-      <script src='https://alpha.openaddressesuk.org/assets/validate_address.js'></script>
+      <!-- script src='https://alpha.openaddressesuk.org/assets/validate_address.js'></script -->
       <script>
 
           var onValidateComplete = function (success) {
@@ -9,12 +9,43 @@
               console.log("Done! " + success);
           }
 
+          function validateAddress(url, exists, attribution, reason, callback) {
+            $.getJSON(url+".json").done(function( data ) {
+                derivations = data['address']['provenance']['activity']['derived_from']
+                for (derived in derivations) {
+                    url = derivations[derived]['urls'][0]
+                    if (url.indexOf("ernest") > 0) {
+                        validation_url = url.replace("http:", "https:") + "/validations";
+                        data = {
+                            exists: exists,
+                            attribution: attribution,
+                            reason: reason
+                        };
+                        $.ajax(validation_url, {
+                            type: "POST",
+                            contentType : 'application/json',
+                            data: JSON.stringify(data),
+                            success: function(data, textStatus, jqXHR) {
+                              callback(true);
+                            },
+                            error: function(jqXHR, textStatus, errorThrown) {
+                              console.log("I am in the error function");
+                              console.log(errorThrown);
+                              console.log(textStatus);
+                              callback(false);
+                            }
+                        });
+                    }
+                }
+            });
+          };
+
           var validate = function (callback) {
               validateAddress(
                   "https://alpha.openaddressesuk.org/addresses/UAdD1o", // my home address
                   true, // Does the address exist?
-                  "@giacecco", // Attribution (optional)
-                  '', // Reason (optional)
+                  "This is the attribution", // Attribution (optional)
+                  'This is the reason', // Reason (optional)
                   callback // Callback method for success or failure.
               );
           }
