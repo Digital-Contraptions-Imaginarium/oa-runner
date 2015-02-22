@@ -1,8 +1,0 @@
-node_modules
-*.csv
-*.json
-*.html
-.Rproj.user
-*.Rproj
-.RData
-.Rhistory

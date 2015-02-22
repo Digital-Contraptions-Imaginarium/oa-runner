@@ -1,0 +1,29 @@
+<html>
+    <head>
+      <script src='https://code.jquery.com/jquery-2.1.3.min.js'></script>
+      <script src='https://alpha.openaddressesuk.org/assets/validate_address.js'></script>
+      <script>
+
+          var onValidateComplete = function (success) {
+              // Let the user know what happened
+              console.log("Done! " + success);
+          }
+
+          var validate = function (callback) {
+              validateAddress(
+                  "https://alpha.openaddressesuk.org/addresses/UAdD1o", // my home address
+                  true, // Does the address exist?
+                  "@giacecco", // Attribution (optional)
+                  '', // Reason (optional)
+                  callback // Callback method for success or failure.
+              );
+          }
+
+          validate(onValidateComplete);
+
+      </script>
+    </head>
+    <body>
+        Hello. sss
+    </body>
+</html>
