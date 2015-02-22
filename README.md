@@ -1,7 +1,7 @@
 oa-runner
 =========
 
-oa-runner is a collection of scripts to support runners and ramblers who want to contribute to [Open Addresses UK](http://openaddressesuk.org) by surveying addresses that are located at a given distance or nearby their planned courses.
+oa-runner is a collection of scripts to support runners and ramblers who want to contribute to [Open Addresses UK](http://openaddressesuk.org) by surveying addresses that are located at a given distance or nearby their planned courses. *Oa-runner is not endorsed by Open Addresses*.
 
 **NOTE: this is a working prototype only**, and Open Addresses is not yet ready to automatically process the outcome of your survey (when you scan the QR codes in the survey forms). You are very welcome to feedback and contribute, though: Please use this repository's [issues section](https://github.com/Digital-Contraptions-Imaginarium/oa-runner/issues).
 
